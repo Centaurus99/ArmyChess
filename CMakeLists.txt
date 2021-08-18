@@ -27,12 +27,14 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Widgets REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
 
-set(PROJECT_SOURCES
-        src/main.cpp
-        src/mainwindow.cpp
-        src/mainwindow.h
-        src/mainwindow.ui
-)
+file(GLOB_RECURSE PROJECT_SOURCES ./src/*.*)
+
+#set(PROJECT_SOURCES
+#        src/main.cpp
+#        src/mainwindow.cpp
+#        src/mainwindow.h
+#        src/mainwindow.ui
+#)
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(ArmyChess
