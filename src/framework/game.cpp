@@ -1,18 +1,13 @@
 #include "game.h"
+#include <algorithm>
+#include <ctime>
 #include <iostream>
+#include <random>
 #include <vector>
 
-// The number of safe nodes in the upper half
-std::vector<int> SAFE_NODE = { 11, 13, 17, 21, 23 };
-
-// Get number of node from Coordinate
-inline int Index(const int& x, const int& y) { return 5 * x + y; }
-
-// Coordinate change list used in the BFS
-int dx[] = { -1, 0, 0, 1, -1, -1, 1, 1 };
-int dy[] = { 0, -1, 1, 0, -1, 1, -1, 1 };
-
-Game::Game() {
+void Game::InitGraph() {
+    // The number of safe nodes in the upper half
+    std::vector<int> SAFE_NODE = { 11, 13, 17, 21, 23 };
     // Set safe nodes
     for (auto x : SAFE_NODE) {
         nodes[x].setSafe(true);
@@ -77,6 +72,11 @@ Game::Game() {
         nodes[index[5][j]].railway_vertical.push_back(index[6][j]);
         nodes[index[6][j]].railway_vertical.push_back(index[5][j]);
     }
+
+    // Coordinate change list used in the BFS
+    int dx[] = { -1, 0, 0, 1, -1, -1, 1, 1 };
+    int dy[] = { 0, -1, 1, 0, -1, 1, -1, 1 };
+
     for (int i = 2; i <= 4; ++i) {
         for (int j = 1; j <= 3; ++j) {
             int lim = nodes[index[i][j]].isSafe() ? 8 : 4;
@@ -93,14 +93,49 @@ Game::Game() {
     }
 }
 
+void Game::InitChess() {
+    // Generate a random list
+    std::vector<int> random_list;
+    for (int i = 0; i < 60; ++i) {
+        if (!nodes[i].isSafe())
+            random_list.push_back(i);
+    }
+    std::mt19937 g(time(0));
+    std::shuffle(random_list.begin(), random_list.end(), g);
+
+    // Generate chess
+    int tip = 0;
+    for (int camp = 0; camp < 2; ++camp) {
+        nodes[random_list[tip++]].chess = new Chess { camp, 0 };
+        nodes[random_list[tip++]].chess = new Chess { camp, 7 };
+        nodes[random_list[tip++]].chess = new Chess { camp, 8 };
+        for (int k = 0; k < 3; ++k) {
+            nodes[random_list[tip++]].chess = new Chess { camp, -2 };
+            for (int i = 1; i <= 3; ++i)
+                nodes[random_list[tip++]].chess = new Chess { camp, i };
+        }
+        for (int k = 0; k < 2; ++k) {
+            nodes[random_list[tip++]].chess = new Chess { camp, -1 };
+            for (int i = 4; i <= 7; ++i)
+                nodes[random_list[tip++]].chess = new Chess { camp, i };
+        }
+    }
+}
+
+Game::Game() {
+    InitGraph();
+    InitChess();
+}
+
 int main() {
     Game g;
-    freopen("log.log", "w", stdout);
-    for (int i = 0; i < 60; ++i) {
-        std::cout << i << ':';
-        for (auto x : g.nodes[i].railway_horizontal) {
-            std::cout << x << ' ';
-        }
-        std::cout << std::endl;
-    }
+    // freopen("log.log", "w", stdout);
+    // Chess* chess;
+    // for (int i = 0; i < 60; ++i) {
+    //     std::cout << i << ':';
+    //     if (chess = g.nodes[i].chess) {
+    //         std::cout << chess->camp << ' ' << chess->role << ' ' << chess->hiden;
+    //     }
+    //     std::cout << std::endl;
+    // }
 }
