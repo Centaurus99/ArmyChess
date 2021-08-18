@@ -1,12 +1,13 @@
 #ifndef GAME_H
 #define GAME_H
 
+#include <cassert>
 #include <iostream>
 #include <vector>
 
 class Chess {
 public:
-    bool hiden; // Whether this chess is hiden
+    bool hidden; // Whether this chess is hidden
 
     // The camp of current player
     //  1: Red
@@ -14,7 +15,7 @@ public:
     int camp;
 
     // The role of this chess
-    //      0:  Flag
+    //   0/10:  Flag(can be carried or not)(default is 10)
     //  1 ~ 9:  GongBing ~ SiLing
     //     -1:  Bomb
     //     -2:  Landmine
@@ -22,11 +23,27 @@ public:
 
     /// @param chess_camp The camp of current player
     /// @param chess_role The role of this chess
-    /// @param is_hiden Whether this chess is hiden
-    Chess(const int& chess_camp, const int& chess_role, const bool& is_hiden = 1)
+    /// @param is_hidden Whether this chess is hidden
+    Chess(const int& chess_camp, const int& chess_role, const bool& is_hidden = 1)
         : camp { chess_camp }
         , role { chess_role }
-        , hiden { is_hiden } { }
+        , hidden { is_hidden } { }
+
+    /// @return -1, 0, 1 respectively represent cannot attack, perish together, able to beat
+    int Attack(const Chess& other) {
+#ifdef DEBUG
+        assert(role != 0);
+        assert(role != -2);
+#endif
+        if (role == -1 || other.role == -1)
+            return 0;
+        if (other.role == -2) {
+            if (role == 1)
+                return 1;
+            return -1;
+        }
+        return other.role < role ? 1 : -1;
+    }
 };
 
 class Node {
@@ -69,10 +86,25 @@ private:
     // Initialize the chess on the chessboard
     void InitChess();
 
+    // Which player is play in this turn
+    // 0: Own side
+    // 1: Opposite
+    int now_player_ = 0;
+
 public:
     Node nodes[60]; // Nodes list
     int index[12][5]; // Number of node from Coordinate
+
     Game();
+    Game(const Game& other) = delete;
+
+    // Turn chess from hidden to shown
+    void TurnOver(int x, int y) {
+#ifdef DEBUG
+        assert(nodes[index[x][y]].chess->hidden == 1);
+#endif
+        nodes[index[x][y]].chess->hidden = 0;
+    }
 };
 
 #endif // GAME_H

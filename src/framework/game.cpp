@@ -106,7 +106,7 @@ void Game::InitChess() {
     // Generate chess
     int tip = 0;
     for (int camp = 0; camp < 2; ++camp) {
-        nodes[random_list[tip++]].chess = new Chess { camp, 0 };
+        nodes[random_list[tip++]].chess = new Chess { camp, 10 };
         nodes[random_list[tip++]].chess = new Chess { camp, 7 };
         nodes[random_list[tip++]].chess = new Chess { camp, 8 };
         for (int k = 0; k < 3; ++k) {
@@ -129,12 +129,13 @@ Game::Game() {
 
 int main() {
     Game g;
+    g.TurnOver(1, 1);
     // freopen("log.log", "w", stdout);
     // Chess* chess;
     // for (int i = 0; i < 60; ++i) {
     //     std::cout << i << ':';
     //     if (chess = g.nodes[i].chess) {
-    //         std::cout << chess->camp << ' ' << chess->role << ' ' << chess->hiden;
+    //         std::cout << chess->camp << ' ' << chess->role << ' ' << chess->hidden;
     //     }
     //     std::cout << std::endl;
     // }
