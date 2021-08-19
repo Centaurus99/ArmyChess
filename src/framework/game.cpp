@@ -1,9 +1,30 @@
 #include "game.h"
 #include <algorithm>
+#include <cassert>
+#include <cstring>
 #include <ctime>
 #include <iostream>
 #include <random>
 #include <vector>
+
+int Chess::Attack(Chess* other) {
+#ifdef DEBUG
+    assert(role != 0);
+    assert(role != -2);
+#endif
+    if (other == nullptr)
+        return 1;
+    if (camp == other->camp)
+        return -1;
+    if (role == -1 || other->role == -1)
+        return 0;
+    if (other->role == -2) {
+        if (role == 1)
+            return 1;
+        return -1;
+    }
+    return other->role < role ? 1 : -1;
+}
 
 void Game::InitGraph() {
     // The number of safe nodes in the upper half
@@ -36,18 +57,18 @@ void Game::InitGraph() {
         if (j != 4) {
             nodes[index[0][j]].road.push_back(index[0][j + 1]);
             nodes[index[0][j] + 30].road.push_back(index[0][j + 1] + 30);
-            nodes[index[1][j]].railway_horizontal.push_back(index[1][j + 1]);
-            nodes[index[1][j] + 30].railway_horizontal.push_back(index[1][j + 1] + 30);
-            nodes[index[5][j]].railway_horizontal.push_back(index[5][j + 1]);
-            nodes[index[5][j] + 30].railway_horizontal.push_back(index[5][j + 1] + 30);
+            nodes[index[1][j]].railway[1].push_back(index[1][j + 1]);
+            nodes[index[1][j] + 30].railway[1].push_back(index[1][j + 1] + 30);
+            nodes[index[5][j]].railway[1].push_back(index[5][j + 1]);
+            nodes[index[5][j] + 30].railway[1].push_back(index[5][j + 1] + 30);
         }
         if (j != 0) {
             nodes[index[0][j]].road.push_back(index[0][j - 1]);
             nodes[index[0][j] + 30].road.push_back(index[0][j - 1] + 30);
-            nodes[index[1][j]].railway_horizontal.push_back(index[1][j - 1]);
-            nodes[index[1][j] + 30].railway_horizontal.push_back(index[1][j - 1] + 30);
-            nodes[index[5][j]].railway_horizontal.push_back(index[5][j - 1]);
-            nodes[index[5][j] + 30].railway_horizontal.push_back(index[5][j - 1] + 30);
+            nodes[index[1][j]].railway[1].push_back(index[1][j - 1]);
+            nodes[index[1][j] + 30].railway[1].push_back(index[1][j - 1] + 30);
+            nodes[index[5][j]].railway[1].push_back(index[5][j - 1]);
+            nodes[index[5][j] + 30].railway[1].push_back(index[5][j - 1] + 30);
         }
         nodes[index[0][j]].road.push_back(index[1][j]);
         nodes[index[0][j] + 30].road.push_back(index[1][j] + 30);
@@ -56,21 +77,21 @@ void Game::InitGraph() {
     }
     for (int i = 1; i < 6; ++i) {
         if (i != 5) {
-            nodes[index[i][0]].railway_vertical.push_back(index[i + 1][0]);
-            nodes[index[i][0] + 30].railway_vertical.push_back(index[i + 1][0] + 30);
-            nodes[index[i][4]].railway_vertical.push_back(index[i + 1][4]);
-            nodes[index[i][4] + 30].railway_vertical.push_back(index[i + 1][4] + 30);
+            nodes[index[i][0]].railway[0].push_back(index[i + 1][0]);
+            nodes[index[i][0] + 30].railway[0].push_back(index[i + 1][0] + 30);
+            nodes[index[i][4]].railway[0].push_back(index[i + 1][4]);
+            nodes[index[i][4] + 30].railway[0].push_back(index[i + 1][4] + 30);
         }
         if (i != 1) {
-            nodes[index[i][0]].railway_vertical.push_back(index[i - 1][0]);
-            nodes[index[i][0] + 30].railway_vertical.push_back(index[i - 1][0] + 30);
-            nodes[index[i][4]].railway_vertical.push_back(index[i - 1][4]);
-            nodes[index[i][4] + 30].railway_vertical.push_back(index[i - 1][4] + 30);
+            nodes[index[i][0]].railway[0].push_back(index[i - 1][0]);
+            nodes[index[i][0] + 30].railway[0].push_back(index[i - 1][0] + 30);
+            nodes[index[i][4]].railway[0].push_back(index[i - 1][4]);
+            nodes[index[i][4] + 30].railway[0].push_back(index[i - 1][4] + 30);
         }
     }
     for (int j = 0; j < 5; j += 2) {
-        nodes[index[5][j]].railway_vertical.push_back(index[6][j]);
-        nodes[index[6][j]].railway_vertical.push_back(index[5][j]);
+        nodes[index[5][j]].railway[0].push_back(index[6][j]);
+        nodes[index[6][j]].railway[0].push_back(index[5][j]);
     }
 
     // Coordinate change list used in the BFS
@@ -128,6 +149,66 @@ Game::Game() {
     InitChess();
 }
 
+void Game::TurnOver(const int& x, const int& y) {
+#ifdef DEBUG
+    assert(nodes[index[x][y]].chess->hidden == 1);
+#endif
+    nodes[index[x][y]].chess->hidden = 0;
+}
+
+std::vector<int> Game::GetRailwayList(
+    const int& now, const bool& direction, const bool& type, const int& start) {
+
+    std::vector<int> ans;
+    if (vis[now])
+        return ans;
+    vis[now] = 1;
+    if (nodes[start].chess->Attack(nodes[now].chess) >= 0)
+        ans.push_back(now);
+
+    // Target node has chess on it
+    if (nodes[now].chess != nullptr)
+        return ans;
+
+    // DFS
+    for (auto to : nodes[now].railway[direction]) {
+        std::vector<int> tmp = GetRailwayList(to, direction, type, start);
+        ans.insert(ans.end(), tmp.begin(), tmp.end());
+    }
+    if (type) {
+        for (auto to : nodes[now].railway[direction ^ 1]) {
+            std::vector<int> tmp
+                = GetRailwayList(to, direction ^ 1, type, start);
+            ans.insert(ans.end(), tmp.begin(), tmp.end());
+        }
+    }
+
+    return ans;
+}
+
+std::vector<int> Game::GetList(const int& x, const int& y) {
+    std::vector<int> ans;
+    memset(vis, 0, sizeof(vis));
+    int now = index[x][y];
+#ifdef DEBUG
+    assert(nodes[now].chess);
+#endif
+    // Linked with road
+    for (auto to : nodes[now].road) {
+        if (nodes[now].chess->Attack(nodes[to].chess) >= 0)
+            ans.push_back(to);
+    }
+    // Linked with railway
+    for (int k = 0; k < 2; ++k) {
+        for (auto to : nodes[now].railway[k]) {
+            std::vector<int> tmp
+                = GetRailwayList(to, k, nodes[now].chess->role == 1, now);
+            ans.insert(ans.end(), tmp.begin(), tmp.end());
+        }
+    }
+    return ans;
+}
+
 int main() {
     Game g;
     g.TurnOver(1, 1);
@@ -136,7 +217,8 @@ int main() {
     // for (int i = 0; i < 60; ++i) {
     //     std::cout << i << ':';
     //     if (chess = g.nodes[i].chess) {
-    //         std::cout << chess->camp << ' ' << chess->role << ' ' << chess->hidden;
+    //         std::cout << chess->camp << ' ' << chess->role << ' ' <<
+    //         chess->hidden;
     //     }
     //     std::cout << std::endl;
     // }

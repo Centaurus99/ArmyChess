@@ -24,26 +24,15 @@ public:
     /// @param chess_camp The camp of current player
     /// @param chess_role The role of this chess
     /// @param is_hidden Whether this chess is hidden
-    Chess(const int& chess_camp, const int& chess_role, const bool& is_hidden = 1)
+    Chess(
+        const int& chess_camp, const int& chess_role, const bool& is_hidden = 1)
         : camp { chess_camp }
         , role { chess_role }
         , hidden { is_hidden } { }
 
-    /// @return -1, 0, 1 respectively represent cannot attack, perish together, able to beat
-    int Attack(const Chess& other) {
-#ifdef DEBUG
-        assert(role != 0);
-        assert(role != -2);
-#endif
-        if (role == -1 || other.role == -1)
-            return 0;
-        if (other.role == -2) {
-            if (role == 1)
-                return 1;
-            return -1;
-        }
-        return other.role < role ? 1 : -1;
-    }
+    /// @return -1, 0, 1 respectively represent cannot attack, perish together,
+    /// able to beat
+    int Attack(Chess* other);
 };
 
 class Node {
@@ -54,14 +43,17 @@ private:
 public:
     Chess* chess;
     std::vector<int> road; // nodes linked with road
-    std::vector<int> railway_vertical; // nodes linked with vertical railway
-    std::vector<int> railway_horizontal; // nodes linked with horizontal railway
+
+    // nodes linked with railway
+    // 0 is vertical, 1 is horizontal
+    std::vector<int> railway[2];
 
     /// @param x Row number
     /// @param y Column number
     /// @param safe Whether this node is safe
     /// @param which_chess Chess on this node
-    Node(const int& x = 0, const int& y = 0, const bool& safe = 0, Chess* which_chess = nullptr)
+    Node(const int& x = 0, const int& y = 0, const bool& safe = 0,
+        Chess* which_chess = nullptr)
         : x_ { x }
         , y_ { y }
         , safe_ { safe }
@@ -91,6 +83,17 @@ private:
     // 1: Opposite
     int now_player_ = 0;
 
+    // Array used in DFS. Whether this node has been visited.
+    bool vis[60];
+
+    /// Get accessible nodes on the railway via DFS
+    /// @param now Current node
+    /// @param direction 0 is vertical, 1 is horizontal
+    /// @param type 1 represent GongBing which can turn on the railway
+    /// @param start Start node
+    std::vector<int> GetRailwayList(const int& now, const bool& direction,
+        const bool& type, const int& start);
+
 public:
     Node nodes[60]; // Nodes list
     int index[12][5]; // Number of node from Coordinate
@@ -99,12 +102,9 @@ public:
     Game(const Game& other) = delete;
 
     // Turn chess from hidden to shown
-    void TurnOver(int x, int y) {
-#ifdef DEBUG
-        assert(nodes[index[x][y]].chess->hidden == 1);
-#endif
-        nodes[index[x][y]].chess->hidden = 0;
-    }
+    void TurnOver(const int& x, const int& y);
+    // Get accessible nodes list
+    std::vector<int> GetList(const int& x, const int& y);
 };
 
 #endif // GAME_H
