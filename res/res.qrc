@@ -1,0 +1,35 @@
+<RCC>
+    <qresource prefix="/image">
+        <file>png/0_0.png</file>
+        <file>png/0_1.png</file>
+        <file>png/1_0.png</file>
+        <file>png/-1_0.png</file>
+        <file>png/1_1.png</file>
+        <file>png/-1_1.png</file>
+        <file>png/2_0.png</file>
+        <file>png/-2_0.png</file>
+        <file>png/2_1.png</file>
+        <file>png/-2_1.png</file>
+        <file>png/3_0.png</file>
+        <file>png/3_1.png</file>
+        <file>png/4_0.png</file>
+        <file>png/4_1.png</file>
+        <file>png/5_0.png</file>
+        <file>png/5_1.png</file>
+        <file>png/6_0.png</file>
+        <file>png/6_1.png</file>
+        <file>png/7_0.png</file>
+        <file>png/7_1.png</file>
+        <file>png/8_0.png</file>
+        <file>png/8_1.png</file>
+        <file>png/9_0.png</file>
+        <file>png/9_1.png</file>
+        <file>png/background.jpg</file>
+        <file>png/chessboard1.png</file>
+        <file>png/chessboard2.png</file>
+        <file>png/full_chessboard.png</file>
+        <file>png/vacant_camp.png</file>
+        <file>png/vacant_chess.png</file>
+        <file>png/vacant_node.png</file>
+    </qresource>
+</RCC>

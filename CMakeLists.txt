@@ -27,7 +27,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Widgets REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
 
-file(GLOB_RECURSE PROJECT_SOURCES ./src/*.*)
+file(GLOB_RECURSE PROJECT_SOURCES ./src/*.* ./res/*.qrc)
 
 #set(PROJECT_SOURCES
 #        src/main.cpp
