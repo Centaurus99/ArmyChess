@@ -96,6 +96,7 @@ void Game::InitGraph() {
 void Game::InitChess() {
     // Generate a random list
     std::vector<int> random_list;
+    random_list.reserve(50);
     for (int i = 0; i < 60; ++i) {
         if (!nodes[i].isSafe())
             random_list.push_back(i);
