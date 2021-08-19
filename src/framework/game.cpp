@@ -271,17 +271,17 @@ void Game::Capture(const int& now, const int& to) {
 
 void Game::SetWinner(const int& winner) { winner_ = winner; }
 
-int main() {
-    Game g;
-    g.TurnOver(1, 1);
-    // freopen("log.log", "w", stdout);
-    // Chess* chess;
-    // for (int i = 0; i < 60; ++i) {
-    //     std::cout << i << ':';
-    //     if (chess = g.nodes[i].chess) {
-    //         std::cout << chess->camp << ' ' << chess->role << ' ' <<
-    //         chess->hidden;
-    //     }
-    //     std::cout << std::endl;
-    // }
-}
+// int main() {
+//     Game g;
+//     g.TurnOver(1, 1);
+//     // freopen("log.log", "w", stdout);
+//     // Chess* chess;
+//     // for (int i = 0; i < 60; ++i) {
+//     //     std::cout << i << ':';
+//     //     if (chess = g.nodes[i].chess) {
+//     //         std::cout << chess->camp << ' ' << chess->role << ' ' <<
+//     //         chess->hidden;
+//     //     }
+//     //     std::cout << std::endl;
+//     // }
+// }
