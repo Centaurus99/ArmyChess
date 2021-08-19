@@ -110,7 +110,6 @@ private:
     // 0: Own side
     // 1: Opposite
     // Initialed in InitChess
-    int start_player_;
     int current_player_;
 
     // Which camp own side belong to
@@ -118,6 +117,16 @@ private:
     //  0: Blue
     // -1: Undecided
     int own_camp_ = -1;
+
+    // Which camp the player turn over in the last time
+    // Index:
+    //      0: Own side
+    //      1: Opposite
+    // Value:
+    //      1: Red
+    //      0: Blue
+    //     -1: Undecided
+    int last_take_[2] = { -1, -1 };
 
     // Which camp win the game
     //  1: Red

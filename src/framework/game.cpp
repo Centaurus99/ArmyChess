@@ -143,7 +143,7 @@ void Game::InitChess() {
     }
     std::mt19937 g(time(0));
     std::shuffle(random_list.begin(), random_list.end(), g);
-    start_player_ = current_player_ = g() & 1;
+    current_player_ = g() & 1;
 
     // Generate chess
     memset(role_count_, 0, sizeof(role_count_));
@@ -245,6 +245,12 @@ void Game::TurnOver(const int& x, const int& y) {
     assert(nodes[index[x][y]].chess->hidden == 1);
 #endif
     nodes[index[x][y]].chess->hidden = 0;
+    if (own_camp_ == -1) {
+        if (last_take_[current_player_] == nodes[index[x][y]].chess->camp) {
+            own_camp_ = last_take_[current_player_] ^ current_player_;
+        }
+        last_take_[current_player_] = nodes[index[x][y]].chess->camp;
+    }
 }
 
 void Game::Capture(const int& now, const int& to) {
