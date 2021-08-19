@@ -5,11 +5,21 @@
 #include <iostream>
 #include <vector>
 
+class Class;
+class Node;
+class Game;
+
 class Chess {
+private:
+    // The Game this chess belong to
+    Game* game_;
+    // The Node this chess belong to
+    Node* node_;
+
 public:
     bool hidden; // Whether this chess is hidden
 
-    // The camp of current player
+    // The camp of this chess
     //  1: Red
     //  0: Blue
     int camp;
@@ -23,15 +33,18 @@ public:
 
     /// @param chess_camp The camp of current player
     /// @param chess_role The role of this chess
+    /// @param game The Game this chess belong to
+    /// @param node The Node this chess belong to
     /// @param is_hidden Whether this chess is hidden
-    Chess(
-        const int& chess_camp, const int& chess_role, const bool& is_hidden = 1)
-        : camp { chess_camp }
-        , role { chess_role }
-        , hidden { is_hidden } { }
+    Chess(const int& chess_camp, const int& chess_role, Game* game, Node* node,
+        const bool& is_hidden);
 
-    /// @return -1, 0, 1 respectively represent cannot attack, perish together,
-    /// able to beat
+    ~Chess();
+
+    void setNode(Node* node) { node_ = node; }
+
+    /// @return -1, 0, 1 respectively represent
+    /// cannot attack, perish together, able to beat
     int Attack(Chess* other);
 };
 
@@ -60,12 +73,17 @@ public:
         , chess { which_chess } { }
 
     Node(const Node& other) = delete;
-    ~Node() { delete chess; }
+    ~Node() { DeleteChess(); }
 
     void setCoordinate(const int& x, const int& y) { x_ = x, y_ = y_; }
     void setSafe(const bool& safe) { safe_ = safe; }
 
     bool isSafe() { return safe_; }
+
+    void DeleteChess() {
+        delete chess;
+        chess = nullptr;
+    }
 };
 
 class Game {
@@ -78,10 +96,34 @@ private:
     // Initialize the chess on the chessboard
     void InitChess();
 
-    // Which player is play in this turn
+    // Flags of both sides
+    // 1: Red
+    // 0: Blue
+    // Set in InitChess
+    Chess* flag_[2];
+
+    // The remaining number of corresponding roles
+    // Add 2 to the index when in use
+    // Initialed in InitChess
+    int role_count_[2][13];
+
     // 0: Own side
     // 1: Opposite
-    int now_player_ = 0;
+    // Initialed in InitChess
+    int start_player_;
+    int current_player_;
+
+    // Which camp own side belong to
+    //  1: Red
+    //  0: Blue
+    // -1: Undecided
+    int own_camp_ = -1;
+
+    // Which camp win the game
+    //  1: Red
+    //  0: Blue
+    // -1: Undecided
+    int winner_ = -1;
 
     // Array used in DFS. Whether this node has been visited.
     bool vis[60];
@@ -101,10 +143,20 @@ public:
     Game();
     Game(const Game& other) = delete;
 
-    // Turn chess from hidden to shown
-    void TurnOver(const int& x, const int& y);
     // Get accessible nodes list
     std::vector<int> GetList(const int& x, const int& y);
+
+    // Change the remaining number of corresponding roles
+    void CountRole(const int& camp, const int& role, const int& value);
+
+    // Turn chess from hidden to shown
+    void TurnOver(const int& x, const int& y);
+
+    // Capture and delete/move related chess
+    void Capture(const int& now, const int& to);
+
+    // One side win the game
+    void SetWinner(const int& winner);
 };
 
 #endif // GAME_H

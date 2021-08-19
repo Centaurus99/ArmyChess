@@ -7,14 +7,33 @@
 #include <random>
 #include <vector>
 
+Chess::Chess(const int& chess_camp, const int& chess_role, Game* game = nullptr,
+    Node* node = nullptr, const bool& is_hidden = 1)
+    : camp { chess_camp }
+    , role { chess_role }
+    , game_ { game }
+    , node_ { node }
+    , hidden { is_hidden } {
+    game_->CountRole(camp, role, 1);
+}
+
+Chess::~Chess() {
+    game_->CountRole(camp, role, -1);
+    if (role == 0)
+        game_->SetWinner(camp ^ 1);
+}
+
 int Chess::Attack(Chess* other) {
 #ifdef DEBUG
+    assert(role != 10);
     assert(role != 0);
     assert(role != -2);
 #endif
     if (other == nullptr)
         return 1;
     if (camp == other->camp)
+        return -1;
+    if (camp == other->node_->isSafe())
         return -1;
     if (role == -1 || other->role == -1)
         return 0;
@@ -23,7 +42,7 @@ int Chess::Attack(Chess* other) {
             return 1;
         return -1;
     }
-    return other->role < role ? 1 : -1;
+    return other->role < role ? 1 : (other->role == role ? 0 : -1);
 }
 
 void Game::InitGraph() {
@@ -124,36 +143,36 @@ void Game::InitChess() {
     }
     std::mt19937 g(time(0));
     std::shuffle(random_list.begin(), random_list.end(), g);
+    start_player_ = current_player_ = g() & 1;
 
     // Generate chess
+    memset(role_count_, 0, sizeof(role_count_));
     int tip = 0;
     for (int camp = 0; camp < 2; ++camp) {
-        nodes[random_list[tip++]].chess = new Chess { camp, 10 };
-        nodes[random_list[tip++]].chess = new Chess { camp, 7 };
-        nodes[random_list[tip++]].chess = new Chess { camp, 8 };
+        nodes[random_list[tip++]].chess = new Chess { camp, 10, this };
+        flag_[camp] = nodes[random_list[tip - 1]].chess;
+        nodes[random_list[tip++]].chess = new Chess { camp, 9, this };
+        nodes[random_list[tip++]].chess = new Chess { camp, 8, this };
         for (int k = 0; k < 3; ++k) {
-            nodes[random_list[tip++]].chess = new Chess { camp, -2 };
+            nodes[random_list[tip++]].chess = new Chess { camp, -2, this };
             for (int i = 1; i <= 3; ++i)
-                nodes[random_list[tip++]].chess = new Chess { camp, i };
+                nodes[random_list[tip++]].chess = new Chess { camp, i, this };
         }
         for (int k = 0; k < 2; ++k) {
-            nodes[random_list[tip++]].chess = new Chess { camp, -1 };
+            nodes[random_list[tip++]].chess = new Chess { camp, -1, this };
             for (int i = 4; i <= 7; ++i)
-                nodes[random_list[tip++]].chess = new Chess { camp, i };
+                nodes[random_list[tip++]].chess = new Chess { camp, i, this };
         }
+    }
+    for (int i = 0; i < 60; ++i) {
+        if (nodes[i].chess != nullptr)
+            nodes[i].chess->setNode(&nodes[i]);
     }
 }
 
 Game::Game() {
     InitGraph();
     InitChess();
-}
-
-void Game::TurnOver(const int& x, const int& y) {
-#ifdef DEBUG
-    assert(nodes[index[x][y]].chess->hidden == 1);
-#endif
-    nodes[index[x][y]].chess->hidden = 0;
 }
 
 std::vector<int> Game::GetRailwayList(
@@ -208,6 +227,43 @@ std::vector<int> Game::GetList(const int& x, const int& y) {
     }
     return ans;
 }
+
+void Game::CountRole(const int& camp, const int& role, const int& value) {
+    role_count_[camp][role + 2] += value;
+    if (role == -2 && role_count_[camp][role + 2] == 0) {
+#ifdef DEBUG
+        assert(flag_[camp]->role == 10);
+#endif
+        --role_count_[camp][role + 2];
+        flag_[camp]->role = 0;
+        ++role_count_[camp][role + 2];
+    }
+}
+
+void Game::TurnOver(const int& x, const int& y) {
+#ifdef DEBUG
+    assert(nodes[index[x][y]].chess->hidden == 1);
+#endif
+    nodes[index[x][y]].chess->hidden = 0;
+}
+
+void Game::Capture(const int& now, const int& to) {
+#ifdef DEBUG
+    assert(nodes[now].chess);
+    assert(nodes[to].chess);
+    assert(nodes[now].chess->Attack(nodes[to].chess) >= 0);
+#endif
+    if (nodes[now].chess->Attack(nodes[to].chess) == 0) {
+        nodes[to].DeleteChess();
+        nodes[now].DeleteChess();
+    } else {
+        nodes[to].DeleteChess();
+        nodes[to].chess = nodes[now].chess;
+        nodes[now].chess = nullptr;
+    }
+}
+
+void Game::SetWinner(const int& winner) { winner_ = winner; }
 
 int main() {
     Game g;
