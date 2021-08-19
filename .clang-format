@@ -1,3 +1,4 @@
 BasedOnStyle: WebKit
 BreakBeforeBraces: Custom
 BinPackParameters: true
+ColumnLimit : 80
