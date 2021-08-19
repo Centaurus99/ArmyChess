@@ -6,12 +6,6 @@ MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow) {
     ui->setupUi(this);
-
-    QPushButton* pushButton = new QPushButton(ui->centerFrame);
-    pushButton->setGeometry(1, 1, 10, 10);
-    //    ui->label->setPixmap(QPixmap(":/image/png/chessboard1.png"));
-    //    ui->label->setScaledContents(true);
-    //    ui->label->setText("");
 }
 
 MainWindow::~MainWindow() { delete ui; }
