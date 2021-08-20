@@ -280,8 +280,8 @@ void Game::Capture(const int& now, const int& to) {
     }
 }
 
-void Game::BeforeTurn() { }
-void Game::AfterTurn() { current_player_ ^= 1; }
+void Game::BeforeTurn() { current_player_ ^= 1; }
+void Game::AfterTurn() { }
 
 void Game::SetWinner(const int& winner) { winner_ = winner; }
 
