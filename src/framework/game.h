@@ -43,6 +43,9 @@ public:
 
     void setNode(Node* node) { node_ = node; }
 
+    // Whether this chess can be turned over or moved
+    bool isMovable();
+
     /// @return -1, 0, 1 respectively represent
     /// cannot attack, perish together, able to beat
     int Attack(Chess* other);

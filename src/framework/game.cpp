@@ -23,6 +23,16 @@ Chess::~Chess() {
         game_->SetWinner(camp ^ 1);
 }
 
+bool Chess::isMovable() {
+    if (hidden)
+        return 1;
+    if (camp == game_->GetCurrentPlayer()) {
+        if (role != -2 && role != 0 && role != 10)
+            return 1;
+    }
+    return 0;
+}
+
 int Chess::Attack(Chess* other) {
 #ifdef DEBUG
     assert(role != 10);
