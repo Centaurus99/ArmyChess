@@ -155,13 +155,13 @@ public:
     Game(const Game& other) = delete;
 
     // Get accessible nodes list
-    std::vector<int> GetList(const int& x, const int& y);
+    std::vector<int> GetList(const int& number);
 
     // Change the remaining number of corresponding roles
     void CountRole(const int& camp, const int& role, const int& value);
 
     // Turn chess from hidden to shown
-    void TurnOver(const int& x, const int& y);
+    void TurnOver(const int& number);
 
     // Capture and delete/move related chess
     void Capture(const int& now, const int& to);

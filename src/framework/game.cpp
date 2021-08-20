@@ -205,23 +205,24 @@ std::vector<int> Game::GetRailwayList(
     return ans;
 }
 
-std::vector<int> Game::GetList(const int& x, const int& y) {
+std::vector<int> Game::GetList(const int& number) {
     std::vector<int> ans;
     memset(vis, 0, sizeof(vis));
-    int now = index[x][y];
+    int x = nodes[number].x();
+    int y = nodes[number].y();
 #ifdef DEBUG
-    assert(nodes[now].chess);
+    assert(nodes[number].chess);
 #endif
     // Linked with road
-    for (auto to : nodes[now].road) {
-        if (nodes[now].chess->Attack(nodes[to].chess) >= 0)
+    for (auto to : nodes[number].road) {
+        if (nodes[number].chess->Attack(nodes[to].chess) >= 0)
             ans.push_back(to);
     }
     // Linked with railway
     for (int k = 0; k < 2; ++k) {
-        for (auto to : nodes[now].railway[k]) {
+        for (auto to : nodes[number].railway[k]) {
             std::vector<int> tmp
-                = GetRailwayList(to, k, nodes[now].chess->role == 1, now);
+                = GetRailwayList(to, k, nodes[number].chess->role == 1, number);
             ans.insert(ans.end(), tmp.begin(), tmp.end());
         }
     }
@@ -240,7 +241,9 @@ void Game::CountRole(const int& camp, const int& role, const int& value) {
     }
 }
 
-void Game::TurnOver(const int& x, const int& y) {
+void Game::TurnOver(const int& number) {
+    int x = nodes[number].x();
+    int y = nodes[number].y();
 #ifdef DEBUG
     assert(nodes[index[x][y]].chess->hidden == 1);
 #endif
