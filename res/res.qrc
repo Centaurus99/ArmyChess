@@ -29,7 +29,9 @@
         <file>png/chessboard2.png</file>
         <file>png/full_chessboard.png</file>
         <file>png/vacant_camp.png</file>
-        <file>png/vacant_chess.png</file>
+        <file>png/hidden_chess.png</file>
         <file>png/vacant_node.png</file>
+        <file>png/10_0.png</file>
+        <file>png/10_1.png</file>
     </qresource>
 </RCC>
