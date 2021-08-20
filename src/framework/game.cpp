@@ -218,8 +218,6 @@ std::vector<int> Game::GetRailwayList(
 std::vector<int> Game::GetList(const int& number) {
     std::vector<int> ans;
     memset(vis, 0, sizeof(vis));
-    int x = nodes[number].x();
-    int y = nodes[number].y();
 #ifdef DEBUG
     assert(nodes[number].chess);
 #endif
@@ -252,17 +250,15 @@ void Game::CountRole(const int& camp, const int& role, const int& value) {
 }
 
 void Game::TurnOver(const int& number) {
-    int x = nodes[number].x();
-    int y = nodes[number].y();
 #ifdef DEBUG
-    assert(nodes[index[x][y]].chess->hidden == 1);
+    assert(nodes[number].chess->hidden == 1);
 #endif
-    nodes[index[x][y]].chess->hidden = 0;
+    nodes[number].chess->hidden = 0;
     if (own_camp_ == -1) {
-        if (last_take_[current_player_] == nodes[index[x][y]].chess->camp) {
+        if (last_take_[current_player_] == nodes[number].chess->camp) {
             own_camp_ = last_take_[current_player_] ^ current_player_;
         }
-        last_take_[current_player_] = nodes[index[x][y]].chess->camp;
+        last_take_[current_player_] = nodes[number].chess->camp;
     }
 }
 
