@@ -79,6 +79,8 @@ public:
     void setSafe(const bool& safe) { safe_ = safe; }
 
     bool isSafe() { return safe_; }
+    int x() { return x_; }
+    int y() { return y_; }
 
     void DeleteChess() {
         delete chess;
