@@ -121,6 +121,7 @@
      <string>游戏</string>
     </property>
     <addaction name="actionflush"/>
+    <addaction name="actionflushframe"/>
    </widget>
    <addaction name="menu"/>
    <addaction name="menu_2"/>
@@ -128,7 +129,12 @@
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionflush">
    <property name="text">
-    <string>flush</string>
+    <string>start</string>
+   </property>
+  </action>
+  <action name="actionflushframe">
+   <property name="text">
+    <string>flushframe</string>
    </property>
   </action>
  </widget>

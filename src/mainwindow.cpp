@@ -5,6 +5,7 @@
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow) {
+    memset(enable_, 0, sizeof(enable_));
     ui->setupUi(this);
     game_ = new Game;
     InitChess();
@@ -50,16 +51,45 @@ QString MainWindow::GetResourceName(Chess* chess) {
     return QString(filename);
 }
 
+void MainWindow::UpdateChessEnable(const int& number) {
+    qDebug() << "UpdateEnable:" << number;
+
+    chess_[number]->setEnabled(enable_[number]);
+}
+
+void MainWindow::UpdateAllChessEnable() {
+    for (int i = 0; i < 60; ++i) {
+        UpdateChessEnable(i);
+    }
+    ui->centerFrame->update();
+}
+
+void MainWindow::SetChessEnable(const int& number, const bool& is_enable) {
+    enable_[number] = is_enable;
+    UpdateChessEnable(number);
+}
+
+void MainWindow::SetAllChessEnable(const bool& is_enable) {
+    memset(enable_, is_enable, sizeof(enable_));
+    UpdateAllChessEnable();
+}
+
+void MainWindow::ChessEnableSyncWithGame() {
+    for (int i = 0; i < 60; ++i) {
+        enable_[i] = (game_->nodes[i].chess != nullptr);
+        UpdateChessEnable(i);
+    }
+    ui->centerFrame->update();
+}
+
 void MainWindow::UpdateChess(const int& number) {
     qDebug() << "Update:" << number;
 
     // Reload icon resource
     chess_[number]->loadIcon(GetResourceName(game_->nodes[number].chess));
 
-    if (game_->nodes[number].chess == nullptr)
-        chess_[number]->setDisabled(true);
-    else
-        chess_[number]->setEnabled(true);
+    // Update Ability
+    UpdateChessEnable(number);
 
     // Set suitable position and size
     float width_ratio = (float)ui->centerFrame->width() / Original_width;
@@ -117,8 +147,29 @@ void MainWindow::resizeEvent(QResizeEvent* event) {
     //             << '\n';
 }
 
-void MainWindow::on_actionflush_triggered() { UpdateAllChess(); }
+void MainWindow::on_actionflush_triggered() {
+    UpdateAllChess();
+    ui->centerFrame->update();
+    ChessEnableSyncWithGame();
+}
 
 void MainWindow::on_chess_clicked(const int& number) {
     qDebug() << "Clicked:" << number;
+    if (slect_ == -1) {
+        if (game_->nodes[number].chess->hidden) {
+            game_->nodes[number].chess->hidden = 0;
+            UpdateChess(number);
+        } else {
+            slect_ = number;
+            SetAllChessEnable(0);
+            SetChessEnable(number, 1);
+        }
+    } else {
+        if (slect_ == number) {
+            slect_ = -1;
+            ChessEnableSyncWithGame();
+        }
+    }
 }
+
+void MainWindow::on_actionflushframe_triggered() { ui->centerFrame->update(); }

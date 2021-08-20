@@ -24,6 +24,8 @@ public:
 private slots:
     void on_actionflush_triggered();
 
+    void on_actionflushframe_triggered();
+
 public slots:
     void on_chess_clicked(const int& number);
 
@@ -32,6 +34,11 @@ private:
 
     // Game backend
     Game* game_;
+
+    // Which button has been slected
+    //     -1 : None
+    // 0 ~ 59 : Corresponding button
+    int slect_ = -1;
 
     // Original size of chessboard
     const int Original_width = 651;
@@ -60,6 +67,10 @@ private:
     // Original chess position and size
     QRect chess_Rect[60];
 
+    // Control whether button is enabled
+    // Default value is False
+    bool enable_[60];
+
     // Calculate the original position and size of chess
     QRect GetOriginalChessRect(int x, int y);
     // Creat Chess
@@ -68,7 +79,18 @@ private:
     // Get the icon resource name of this chess
     QString GetResourceName(Chess* chess);
 
-    // Chess positon and icon of chess according to chessboard
+    // Update whether button is enabled
+    void UpdateChessEnable(const int& number);
+    void UpdateAllChessEnable();
+
+    // Set whether button is enabled
+    void SetChessEnable(const int& number, const bool& is_enable);
+    void SetAllChessEnable(const bool& is_enable);
+
+    // Enable decided by whether here has chess on the node
+    void ChessEnableSyncWithGame();
+
+    // Update positon and icon of chess according to chessboard
     void UpdateChess(const int& number);
     void UpdateAllChess();
 };
