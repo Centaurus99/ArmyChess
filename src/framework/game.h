@@ -168,6 +168,14 @@ public:
 
     // One side win the game
     void SetWinner(const int& winner);
+
+    int GetCurrentPlayer() { return current_player_; }
+    int GetOwnCamp() { return own_camp_; }
+    int GetWinner() { return winner_; }
+
+    // Game mantain function
+    void BeforeTurn();
+    void AfterTurn();
 };
 
 #endif // GAME_H
