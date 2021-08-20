@@ -45,7 +45,7 @@ int Chess::Attack(Chess* other) {
         return 1;
     if (camp == other->camp)
         return -1;
-    if (camp == other->node_->isSafe())
+    if (other->node_->isSafe())
         return -1;
     if (role == -1 || other->role == -1)
         return 0;
@@ -280,8 +280,8 @@ void Game::Capture(const int& now, const int& to) {
     }
 }
 
-void Game::BeforeTurn() { }
-void Game::AfterTurn() { current_player_ ^= 1; }
+void Game::BeforeTurn() { current_player_ ^= 1; }
+void Game::AfterTurn() { }
 
 void Game::SetWinner(const int& winner) { winner_ = winner; }
 
