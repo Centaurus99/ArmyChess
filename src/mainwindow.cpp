@@ -32,33 +32,46 @@ QRect MainWindow::GetOriginalChessRect(int x, int y) {
 
 void MainWindow::InitChess() {
     for (int i = 0; i < 60; ++i) {
-        chess_[i]
-            = new ChessButton(ui->centerFrame, ":/image/png/vacant_chess.png");
+        chess_[i] = new ChessButton(ui->centerFrame);
         chess_Rect[i]
             = GetOriginalChessRect(game_->nodes[i].x(), game_->nodes[i].y());
     }
-    //    ChessButton* button
-    //        = new ChessButton(ui->centerFrame,
-    //        ":/image/png/vacant_chess.png");
-    //    button->setGeometry(20, 20, 100, 100);
-    //    button->loadIcon("");
-    //    button->setDisabled(true);
-    //    button->setIcon();
+}
+
+QString MainWindow::GetResourceName(Chess* chess) {
+    if (chess == nullptr)
+        return "";
+    if (chess->hidden)
+        return ":/image/png/hidden_chess.png";
+    char filename[50];
+    sprintf(filename, ":/image/png/%d_%d.png", chess->role, chess->camp);
+    return QString(filename);
 }
 
 void MainWindow::UpdateChess(const int& number) {
+    qDebug() << "Update:" << number;
+
+    // Reload icon resource
+    chess_[number]->loadIcon(GetResourceName(game_->nodes[number].chess));
+
+    if (game_->nodes[number].chess == nullptr)
+        chess_[number]->setDisabled(true);
+    else
+        chess_[number]->setEnabled(true);
+
+    // Set suitable position and size
     float width_ratio = (float)ui->centerFrame->width() / Original_width;
     float height_ratio = (float)ui->centerFrame->height() / Original_height;
     chess_[number]->setGeometry(chess_Rect[number].x() * width_ratio,
         chess_Rect[number].y() * height_ratio,
         chess_Rect[number].width() * width_ratio,
         chess_Rect[number].height() * height_ratio);
+
+    // Set icon
     chess_[number]->setIcon();
-    //    chess_[number]->update();
-    //    ui->centerFrame->update();
 }
+
 void MainWindow::UpdateAllChess() {
-    qDebug() << "UpdateAllChess";
     for (int i = 0; i < 60; ++i) {
         UpdateChess(i);
     }

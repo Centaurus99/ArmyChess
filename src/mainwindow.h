@@ -62,6 +62,9 @@ private:
     // Creat Chess
     void InitChess();
 
+    // Get the icon resource name of this chess
+    QString GetResourceName(Chess* chess);
+
     // Chess positon and icon of chess according to chessboard
     void UpdateChess(const int& number);
     void UpdateAllChess();
