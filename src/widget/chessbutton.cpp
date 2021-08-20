@@ -5,8 +5,11 @@ void ChessButton::loadIcon(const QString& res_name) { icon_.load(res_name); }
 
 void ChessButton::setIcon() {
     QIcon icon;
-    icon.addPixmap(icon_.scaled(width() - 8, height() - 8), QIcon::Normal);
-    icon.addPixmap(icon_.scaled(width() - 8, height() - 8), QIcon::Disabled);
+    if (!icon_.isNull()) {
+        icon.addPixmap(icon_.scaled(width() - 8, height() - 8), QIcon::Normal);
+        icon.addPixmap(
+            icon_.scaled(width() - 8, height() - 8), QIcon::Disabled);
+    }
     QPushButton::setIcon(icon);
     setIconSize(size());
 }
