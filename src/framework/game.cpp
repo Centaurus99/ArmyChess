@@ -143,7 +143,7 @@ void Game::InitChess() {
     }
     std::mt19937 g(time(0));
     std::shuffle(random_list.begin(), random_list.end(), g);
-    current_player_ = g() & 1;
+    start_player_ = current_player_ = g() & 1;
 
     // Generate chess
     memset(role_count_, 0, sizeof(role_count_));
