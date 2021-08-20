@@ -29,5 +29,7 @@ ChessButton::ChessButton(QWidget* parent, const QString& icon_name)
 
     // Set icon
     loadIcon(icon_name);
-    setIcon();
+    if (icon_name != "") {
+        setIcon();
+    }
 }

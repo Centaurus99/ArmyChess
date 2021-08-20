@@ -120,11 +120,17 @@
     <property name="title">
      <string>游戏</string>
     </property>
+    <addaction name="actionflush"/>
    </widget>
    <addaction name="menu"/>
    <addaction name="menu_2"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionflush">
+   <property name="text">
+    <string>flush</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>
