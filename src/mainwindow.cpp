@@ -32,7 +32,9 @@ QRect MainWindow::GetOriginalChessRect(int x, int y) {
 
 void MainWindow::InitChess() {
     for (int i = 0; i < 60; ++i) {
-        chess_[i] = new ChessButton(ui->centerFrame);
+        chess_[i] = new ChessButton(i, ui->centerFrame);
+        connect(chess_[i], &ChessButton::chess_clicked, this,
+            &MainWindow::on_chess_clicked);
         chess_Rect[i]
             = GetOriginalChessRect(game_->nodes[i].x(), game_->nodes[i].y());
     }
@@ -116,3 +118,7 @@ void MainWindow::resizeEvent(QResizeEvent* event) {
 }
 
 void MainWindow::on_actionflush_triggered() { UpdateAllChess(); }
+
+void MainWindow::on_chess_clicked(const int& number) {
+    qDebug() << "Clicked:" << number;
+}

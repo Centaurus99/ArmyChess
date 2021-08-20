@@ -24,6 +24,9 @@ public:
 private slots:
     void on_actionflush_triggered();
 
+public slots:
+    void on_chess_clicked(const int& number);
+
 private:
     Ui::MainWindow* ui;
 

@@ -14,8 +14,10 @@ void ChessButton::setIcon() {
     setIconSize(size());
 }
 
-ChessButton::ChessButton(QWidget* parent, const QString& icon_name)
-    : QPushButton { parent } {
+ChessButton::ChessButton(
+    const int& number, QWidget* parent, const QString& icon_name)
+    : QPushButton { parent }
+    , number_ { number } {
 
     // Set shadow
     QGraphicsDropShadowEffect* effect = new QGraphicsDropShadowEffect;
@@ -35,4 +37,8 @@ ChessButton::ChessButton(QWidget* parent, const QString& icon_name)
     if (icon_name != "") {
         setIcon();
     }
+
+    // Connect signal
+    connect(this, &ChessButton::clicked, this,
+        [&]() { emit chess_clicked(number_); });
 }
