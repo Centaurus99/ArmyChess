@@ -22,16 +22,28 @@ public:
     void resizeEvent(QResizeEvent* event);
 
 private slots:
-    void on_actionflush_triggered();
+    void on_actionstart_triggered();
 
-public slots:
-    void on_chess_clicked(const int& number);
+    void on_actionflushframe_triggered();
+
+    void chess_clicked(const int& number);
 
 private:
     Ui::MainWindow* ui;
 
     // Game backend
     Game* game_;
+    // whether game is in process
+    bool in_game_ = 0;
+    // whether button ability is locked
+    bool buttton_lock = 0;
+    // whether is under network mode
+    bool network_mode = 0;
+
+    // Which button has been slected
+    //     -1 : None
+    // 0 ~ 59 : Corresponding button
+    int select_ = -1;
 
     // Original size of chessboard
     const int Original_width = 651;
@@ -54,11 +66,16 @@ private:
     const float HW_ratio = (float)Original_height / (float)Original_width;
     // Width of border around centerFrame
     const int border_width = 9;
+    const int border_height = 46;
 
     // Buttons as chess
     ChessButton* chess_[60];
     // Original chess position and size
     QRect chess_Rect[60];
+
+    // Control whether button is enabled
+    // Default value is False
+    bool enable_[60];
 
     // Calculate the original position and size of chess
     QRect GetOriginalChessRect(int x, int y);
@@ -68,8 +85,27 @@ private:
     // Get the icon resource name of this chess
     QString GetResourceName(Chess* chess);
 
-    // Chess positon and icon of chess according to chessboard
+    // Update whether button is enabled
+    void UpdateChessEnable(const int& number);
+    void UpdateAllChessEnable();
+
+    // Set whether button is enabled
+    void SetChessEnable(const int& number, const bool& is_enable);
+    void SetAllChessEnable(const bool& is_enable);
+
+    // Enable decided by whether here has chess on the node and
+    // whether current player can manipulate this chess
+    void ChessEnableSyncWithGame();
+
+    // When select_ is not -1, use this to mark accessible chess
+    void EnableAccessibleChess(const int& number);
+
+    // Update positon and icon of chess according to chessboard
     void UpdateChess(const int& number);
     void UpdateAllChess();
+
+    // Game mantain function
+    void BeforeTurn();
+    void AfterTurn();
 };
 #endif // MAINWINDOW_H
