@@ -112,6 +112,7 @@ private:
     // 0: Own side
     // 1: Opposite
     // Initialed in InitChess
+    int start_player_;
     int current_player_;
 
     // Which camp own side belong to
@@ -169,6 +170,7 @@ public:
     // One side win the game
     void SetWinner(const int& winner);
 
+    int GetStartPlayer() { return start_player_; }
     int GetCurrentPlayer() { return current_player_; }
     int GetOwnCamp() { return own_camp_; }
     int GetWinner() { return winner_; }
