@@ -275,7 +275,7 @@ void Game::Capture(const int& now, const int& to) {
         nodes[now].DeleteChess();
     } else {
         nodes[to].DeleteChess();
-        nodes[to].chess = nodes[now].chess;
+        nodes[to].setChess(nodes[now].chess);
         nodes[now].chess = nullptr;
     }
 }

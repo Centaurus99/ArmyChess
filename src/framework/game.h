@@ -80,6 +80,10 @@ public:
 
     void setCoordinate(const int& x, const int& y) { x_ = x, y_ = y; }
     void setSafe(const bool& safe) { safe_ = safe; }
+    void setChess(Chess* new_chess) {
+        chess = new_chess;
+        chess->setNode(this);
+    }
 
     bool isSafe() { return safe_; }
     int x() { return x_; }
