@@ -75,7 +75,7 @@ public:
     Node(const Node& other) = delete;
     ~Node() { DeleteChess(); }
 
-    void setCoordinate(const int& x, const int& y) { x_ = x, y_ = y_; }
+    void setCoordinate(const int& x, const int& y) { x_ = x, y_ = y; }
     void setSafe(const bool& safe) { safe_ = safe; }
 
     bool isSafe() { return safe_; }
