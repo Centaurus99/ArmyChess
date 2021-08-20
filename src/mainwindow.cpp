@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
+#include <QtWidgets/QMessageBox>
 #include <QtWidgets/QPushButton>
 #include <vector>
 
@@ -163,6 +164,22 @@ void MainWindow::resizeEvent(QResizeEvent* event) {
              << '\n';
 }
 
+void MainWindow::StartGame() {
+    in_game_ = 1;
+    UpdateAllChess();
+    ui->centerFrame->update();
+    BeforeTurn();
+}
+
+void MainWindow::EndGame(const int& winner) {
+    in_game_ = 0;
+    SetAllChessEnable(0);
+    QString winner_name = winner == 0 ? "我方" : "对方";
+    QMessageBox::about(this, "游戏结束", winner_name + "获胜！  ");
+    delete game_;
+    game_ = new Game;
+}
+
 void MainWindow::BeforeTurn() {
     game_->BeforeTurn();
     qDebug() << "[BeforeTurn]"
@@ -187,17 +204,16 @@ void MainWindow::BeforeTurn() {
     }
     }
 }
+
 void MainWindow::AfterTurn() {
+    if (game_->GetWinner() != -1) {
+        EndGame(game_->GetOwnCamp() ^ game_->GetWinner());
+    }
     game_->AfterTurn();
     BeforeTurn();
 }
 
-void MainWindow::on_actionstart_triggered() {
-    in_game_ = 1;
-    UpdateAllChess();
-    ui->centerFrame->update();
-    BeforeTurn();
-}
+void MainWindow::on_actionstart_triggered() { StartGame(); }
 
 void MainWindow::chess_clicked(const int& number) {
     qDebug() << "Clicked:" << number;

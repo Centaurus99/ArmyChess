@@ -105,6 +105,8 @@ private:
     void UpdateAllChess();
 
     // Game mantain function
+    void StartGame();
+    void EndGame(const int& winner);
     void BeforeTurn();
     void AfterTurn();
 };
