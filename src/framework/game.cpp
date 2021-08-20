@@ -45,7 +45,7 @@ int Chess::Attack(Chess* other) {
         return 1;
     if (camp == other->camp)
         return -1;
-    if (camp == other->node_->isSafe())
+    if (other->node_->isSafe())
         return -1;
     if (role == -1 || other->role == -1)
         return 0;
