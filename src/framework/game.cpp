@@ -7,8 +7,8 @@
 #include <random>
 #include <vector>
 
-Chess::Chess(const int& chess_camp, const int& chess_role, Game* game = nullptr,
-    Node* node = nullptr, const bool& is_hidden = 1)
+Chess::Chess(const int& chess_camp, const int& chess_role, Game* game,
+    Node* node, const bool& is_hidden)
     : camp { chess_camp }
     , role { chess_role }
     , game_ { game }

@@ -36,8 +36,8 @@ public:
     /// @param game The Game this chess belong to
     /// @param node The Node this chess belong to
     /// @param is_hidden Whether this chess is hidden
-    Chess(const int& chess_camp, const int& chess_role, Game* game, Node* node,
-        const bool& is_hidden);
+    Chess(const int& chess_camp, const int& chess_role, Game* game = nullptr,
+        Node* node = nullptr, const bool& is_hidden = 1);
 
     ~Chess();
 
