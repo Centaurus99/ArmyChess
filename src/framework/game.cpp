@@ -262,7 +262,8 @@ bool Game::Movable(const int& player) {
     for (int i = 0; i < 60; ++i) {
         if (nodes[i].chess != nullptr
             && nodes[i].chess->camp == (own_camp_ ^ player)) {
-            if (GetList(i).size() != 0)
+            int role = nodes[i].chess->role;
+            if (role != -2 && role != 0 && role != 10 && GetList(i).size() != 0)
                 return 1;
         }
     }
