@@ -20,7 +20,7 @@ Chess::Chess(const int& chess_camp, const int& chess_role, Game* game,
 Chess::~Chess() {
     game_->CountRole(camp, role, -1);
     if (role == 0)
-        game_->SetWinner(camp ^ 1);
+        game_->SetWinner(camp ^ 1 ^ game_->GetOwnCamp());
 }
 
 bool Chess::isMovable() {
@@ -251,6 +251,24 @@ void Game::CountRole(const int& camp, const int& role, const int& value) {
     }
 }
 
+bool Game::Movable(const int& player) {
+    for (int i = 0; i < 60; ++i) {
+        if (nodes[i].chess != nullptr && nodes[i].chess->hidden)
+            return 1;
+    }
+    if (own_camp_ == -1)
+        return 0;
+
+    for (int i = 0; i < 60; ++i) {
+        if (nodes[i].chess != nullptr
+            && nodes[i].chess->camp == (own_camp_ ^ player)) {
+            if (GetList(i).size() != 0)
+                return 1;
+        }
+    }
+    return 0;
+}
+
 void Game::TurnOver(const int& number) {
 #ifdef DEBUG
     assert(nodes[number].chess->hidden == 1);
@@ -281,7 +299,10 @@ void Game::Capture(const int& now, const int& to) {
 }
 
 void Game::BeforeTurn() { current_player_ ^= 1; }
-void Game::AfterTurn() { }
+void Game::AfterTurn() {
+    if (!Movable(current_player_ ^ 1))
+        SetWinner(current_player_);
+}
 
 void Game::SetWinner(const int& winner) { winner_ = winner; }
 

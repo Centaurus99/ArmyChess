@@ -168,13 +168,16 @@ public:
     // Change the remaining number of corresponding roles
     void CountRole(const int& camp, const int& role, const int& value);
 
+    // Whether player can operate
+    bool Movable(const int& player);
+
     // Turn chess from hidden to shown
     void TurnOver(const int& number);
 
     // Capture and delete/move related chess
     void Capture(const int& now, const int& to);
 
-    // One side win the game
+    // One player win the game
     void SetWinner(const int& winner);
 
     int GetStartPlayer() { return start_player_; }
