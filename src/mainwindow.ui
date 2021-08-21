@@ -257,6 +257,7 @@
     </property>
     <addaction name="actionstart"/>
     <addaction name="actionflushframe"/>
+    <addaction name="actionsurrender"/>
    </widget>
    <addaction name="menu"/>
    <addaction name="menu_2"/>
@@ -280,6 +281,17 @@
   <action name="actionflushframe">
    <property name="text">
     <string>flushframe</string>
+   </property>
+  </action>
+  <action name="actionsurrender">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>投降</string>
+   </property>
+   <property name="shortcut">
+    <string>F6</string>
    </property>
   </action>
  </widget>

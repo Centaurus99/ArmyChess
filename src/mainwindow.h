@@ -30,6 +30,8 @@ private slots:
 
     void chess_clicked(const int& number);
 
+    void on_actionsurrender_triggered();
+
 private:
     Ui::MainWindow* ui;
 
@@ -40,7 +42,7 @@ private:
     // whether button ability is locked
     bool buttton_lock_ = 0;
     // whether is under network mode
-    bool network_mode_ = 0;
+    bool online_mode_ = 0;
     // Count the number of steps
     int step_count_ = 0;
     // Remaining timeout times
@@ -120,6 +122,9 @@ private:
     void EndGame(const int& winner);
     void BeforeTurn();
     void AfterTurn();
+
+    // Surrender
+    void Surrender(const int& player);
 
     // Set chessboard in the center with a specific aspect ratio
     void Resize();

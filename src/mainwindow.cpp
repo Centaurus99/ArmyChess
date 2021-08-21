@@ -166,6 +166,7 @@ void MainWindow::StartGame() {
 
 void MainWindow::EndGame(const int& winner) {
     in_game_ = 0;
+    ui->actionsurrender->setEnabled(0);
     SetAllChessEnable(0);
     QString winner_name = winner == 0 ? "我方" : "对方";
     QMessageBox::about(this, "游戏结束", winner_name + "获胜！  ");
@@ -174,6 +175,8 @@ void MainWindow::EndGame(const int& winner) {
 void MainWindow::BeforeTurn() {
     game_->BeforeTurn();
     ++step_count_;
+    if (step_count_ == 20)
+        ui->actionsurrender->setEnabled(1);
     qDebug() << "[BeforeTurn]"
              << "CurrentPlayer:" << game_->GetCurrentPlayer();
     qDebug() << "[BeforeTurn]"
@@ -209,6 +212,14 @@ void MainWindow::AfterTurn() {
         return;
     }
     BeforeTurn();
+}
+
+void MainWindow::Surrender(const int& player) {
+    int ret = QMessageBox::warning(
+        0, "投降", "确认投降？", QMessageBox::Yes | QMessageBox::No);
+    if (ret == QMessageBox::Yes) {
+        EndGame(player ^ 1);
+    }
 }
 
 void MainWindow::Resize() {
@@ -294,4 +305,11 @@ void MainWindow::chess_clicked(const int& number) {
 void MainWindow::on_actionflushframe_triggered() {
     UpdateAllChess();
     ui->centerFrame->update();
+}
+
+void MainWindow::on_actionsurrender_triggered() {
+    if (online_mode_)
+        Surrender(0);
+    else
+        Surrender(game_->GetCurrentPlayer());
 }
