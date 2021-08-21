@@ -11,6 +11,8 @@ MainWindow::MainWindow(QWidget* parent)
     ui->setupUi(this);
     game_ = new Game;
     InitChess();
+    delete game_;
+    game_ = nullptr;
 }
 
 MainWindow::~MainWindow() {
@@ -102,7 +104,10 @@ void MainWindow::UpdateChess(const int& number) {
     //    qDebug() << "Update:" << number;
 
     // Reload icon resource
-    chess_[number]->loadIcon(GetResourceName(game_->nodes[number].chess));
+    if (in_game_)
+        chess_[number]->loadIcon(GetResourceName(game_->nodes[number].chess));
+    else
+        chess_[number]->loadIcon("");
 
     // Set suitable position and size
     float width_ratio = (float)ui->centerFrame->width() / Original_width;
@@ -164,7 +169,16 @@ void MainWindow::resizeEvent(QResizeEvent* event) {
              << '\n';
 }
 
+void MainWindow::GameClear() {
+    delete game_;
+    game_ = new Game;
+    buttton_lock = 0;
+    select_ = -1;
+    SetAllChessEnable(0);
+}
+
 void MainWindow::StartGame() {
+    GameClear();
     in_game_ = 1;
     UpdateAllChess();
     ui->centerFrame->update();
@@ -176,8 +190,6 @@ void MainWindow::EndGame(const int& winner) {
     SetAllChessEnable(0);
     QString winner_name = winner == 0 ? "我方" : "对方";
     QMessageBox::about(this, "游戏结束", winner_name + "获胜！  ");
-    delete game_;
-    game_ = new Game;
 }
 
 void MainWindow::BeforeTurn() {
@@ -208,6 +220,7 @@ void MainWindow::BeforeTurn() {
 void MainWindow::AfterTurn() {
     if (game_->GetWinner() != -1) {
         EndGame(game_->GetOwnCamp() ^ game_->GetWinner());
+        return;
     }
     game_->AfterTurn();
     BeforeTurn();
