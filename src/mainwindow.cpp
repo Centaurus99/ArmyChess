@@ -51,14 +51,13 @@ QString MainWindow::GetResourceName(Chess* chess) {
         return "";
     if (chess->hidden)
         return ":/image/png/hidden_chess.png";
-    char filename[50];
-    sprintf(filename, ":/image/png/%d_%d.png", chess->role, chess->camp);
-    return QString(filename);
+    return QString(":/image/png/%1_%2.png")
+        .arg(QString::number(chess->role), QString::number(chess->camp));
 }
 
 void MainWindow::UpdateChessEnable(const int& number) {
     //    qDebug() << "UpdateEnable:" << number;
-    if (!buttton_lock)
+    if (!buttton_lock_)
         chess_[number]->setEnabled(enable_[number]);
 
     ui->centerFrame->update();
@@ -136,8 +135,10 @@ void MainWindow::UpdateAllChess() {
 void MainWindow::GameClear() {
     delete game_;
     game_ = new Game;
-    buttton_lock = 0;
+    buttton_lock_ = 0;
     select_ = -1;
+    step_count_ = 0;
+    timeout_remain_[0] = timeout_remain_[1] = 3;
     SetAllChessEnable(0);
 }
 
@@ -158,27 +159,33 @@ void MainWindow::EndGame(const int& winner) {
 
 void MainWindow::BeforeTurn() {
     game_->BeforeTurn();
+    ++step_count_;
     qDebug() << "[BeforeTurn]"
              << "CurrentPlayer:" << game_->GetCurrentPlayer();
     qDebug() << "[BeforeTurn]"
              << "OwnCamp:" << game_->GetOwnCamp();
+    qDebug() << "[BeforeTurn]"
+             << "StepCount_:" << step_count_;
     ChessEnableSyncWithGame();
     ui->label_2->setText(
         game_->GetCurrentPlayer() == 0 ? "我方走子" : "对方走子");
     switch (game_->GetOwnCamp()) {
     case -1: {
-        ui->label_3->setText("阵营：待定");
+        ui->label_3->setText("我方阵营：待定");
         break;
     }
     case 0: {
-        ui->label_3->setText("阵营：蓝色");
+        ui->label_3->setText("我方阵营：蓝色");
         break;
     }
     case 1: {
-        ui->label_3->setText("阵营：红色");
+        ui->label_3->setText("我方阵营：红色");
         break;
     }
     }
+    ui->label_4->setText(QString("超时机会：%1 次")
+                             .arg(timeout_remain_[game_->GetCurrentPlayer()]));
+    ui->label_5->setText(QString("第 %1 步").arg(step_count_));
 }
 
 void MainWindow::AfterTurn() {

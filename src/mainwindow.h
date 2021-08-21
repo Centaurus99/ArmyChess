@@ -38,9 +38,13 @@ private:
     // whether game is in process
     bool in_game_ = 0;
     // whether button ability is locked
-    bool buttton_lock = 0;
+    bool buttton_lock_ = 0;
     // whether is under network mode
-    bool network_mode = 0;
+    bool network_mode_ = 0;
+    // Count the number of steps
+    int step_count_ = 0;
+    // Remaining timeout times
+    int timeout_remain_[2] = { 3, 3 };
 
     // Which button has been slected
     //     -1 : None
