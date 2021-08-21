@@ -183,7 +183,7 @@ void MainWindow::BeforeTurn() {
 
 void MainWindow::AfterTurn() {
     if (game_->GetWinner() != -1) {
-        EndGame(game_->GetOwnCamp() ^ game_->GetWinner());
+        EndGame(game_->GetWinner());
         return;
     }
     game_->AfterTurn();
