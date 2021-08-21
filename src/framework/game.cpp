@@ -43,6 +43,8 @@ int Chess::Attack(Chess* other) {
 #endif
     if (other == nullptr)
         return 1;
+    if (other->hidden)
+        return -1;
     if (camp == other->camp)
         return -1;
     if (other->node_->isSafe())
