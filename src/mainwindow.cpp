@@ -103,12 +103,14 @@ void MainWindow::ChessEnableSyncWithGame() {
 
 void MainWindow::EnableAccessibleChess(const int& number) {
     SetAllChessEnable(0);
-    SetChessEnable(number, 1);
     std::vector<int> list = game_->GetList(number);
     for (auto x : list) {
         SetChessEnable(x, 1);
         SetChessMarked(x, 1);
     }
+    SetChessEnable(number, 1);
+    SetChessMarked(number, 1);
+    chess_[number]->setSpeciallyMarked(1);
 }
 
 void MainWindow::UpdateChess(const int& number) {

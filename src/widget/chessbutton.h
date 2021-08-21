@@ -16,6 +16,8 @@ private:
     int number_;
     // Whether is marked
     bool mark_ = 0;
+    // Whether is marked
+    bool special_mark_ = 0;
 
     // Draw mark signs
     void paintEvent(QPaintEvent* event);
@@ -33,6 +35,10 @@ public:
     void setIcon();
     // Set whether is marked
     void setMarked(const bool& mark);
+
+    // Set whether is specially marked
+    // Special mark will be reset when normal mark is set
+    void setSpeciallyMarked(const bool& mark);
 };
 
 #endif // CHESSBUTTON_H

@@ -49,12 +49,24 @@ void ChessButton::paintEvent(QPaintEvent* event) {
         QPainter p(this);
         p.setRenderHint(QPainter::Antialiasing);
         p.setPen(Qt::black);
-        p.setBrush(Qt::green);
-        p.drawRect(10, 30, 10, 10);
+        p.setBrush(QColor(150, 255, 150, 222));
+        if (special_mark_) {
+            p.translate(width() / 2 - 6, height() / 2 - 6);
+            p.drawRect(0, 0, 12, 12);
+        } else {
+            p.translate(width() / 2 - 5, height() / 2 - 5);
+            p.drawEllipse(0, 0, 10, 10);
+        }
     }
 }
 
 void ChessButton::setMarked(const bool& mark) {
     mark_ = mark;
+    special_mark_ = 0;
+    update();
+}
+
+void ChessButton::setSpeciallyMarked(const bool& mark) {
+    special_mark_ = mark;
     update();
 }
