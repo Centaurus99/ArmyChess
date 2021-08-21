@@ -182,11 +182,11 @@ void MainWindow::BeforeTurn() {
 }
 
 void MainWindow::AfterTurn() {
+    game_->AfterTurn();
     if (game_->GetWinner() != -1) {
         EndGame(game_->GetWinner());
         return;
     }
-    game_->AfterTurn();
     BeforeTurn();
 }
 
