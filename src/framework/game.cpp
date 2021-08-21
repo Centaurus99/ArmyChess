@@ -286,7 +286,6 @@ void Game::TurnOver(const int& number) {
 void Game::Capture(const int& now, const int& to) {
 #ifdef DEBUG
     assert(nodes[now].chess);
-    assert(nodes[to].chess);
     assert(nodes[now].chess->Attack(nodes[to].chess) >= 0);
 #endif
     if (nodes[now].chess->Attack(nodes[to].chess) == 0) {
@@ -303,6 +302,8 @@ void Game::BeforeTurn() { current_player_ ^= 1; }
 void Game::AfterTurn() {
     if (!Movable(current_player_ ^ 1))
         SetWinner(current_player_);
+    if (!Movable(current_player_))
+        SetWinner(current_player_ ^ 1);
 }
 
 void Game::SetWinner(const int& winner) { winner_ = winner; }

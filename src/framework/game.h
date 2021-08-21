@@ -4,6 +4,7 @@
 #include <cassert>
 #include <iostream>
 #include <vector>
+#define DEBUG 1
 
 class Class;
 class Node;
