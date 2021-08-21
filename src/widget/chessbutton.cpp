@@ -42,3 +42,19 @@ ChessButton::ChessButton(
     connect(this, &ChessButton::clicked, this,
         [&]() { emit chess_clicked(number_); });
 }
+
+void ChessButton::paintEvent(QPaintEvent* event) {
+    QPushButton::paintEvent(event);
+    if (mark_) {
+        QPainter p(this);
+        p.setRenderHint(QPainter::Antialiasing);
+        p.setPen(Qt::black);
+        p.setBrush(Qt::green);
+        p.drawRect(10, 30, 10, 10);
+    }
+}
+
+void ChessButton::setMarked(const bool& mark) {
+    mark_ = mark;
+    update();
+}

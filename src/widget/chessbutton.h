@@ -1,6 +1,7 @@
 #ifndef CHESSBUTTON_H
 #define CHESSBUTTON_H
 
+#include <QPainter>
 #include <QPushButton>
 
 class ChessButton : public QPushButton {
@@ -13,6 +14,11 @@ private:
     QPixmap icon_;
     // The number of this button
     int number_;
+    // Whether is marked
+    bool mark_ = 0;
+
+    // Draw mark signs
+    void paintEvent(QPaintEvent* event);
 
 public:
     /// @param number The number of this button
@@ -25,6 +31,8 @@ public:
     void loadIcon(const QString& res_name);
     // Set icon according to button size
     void setIcon();
+    // Set whether is marked
+    void setMarked(const bool& mark);
 };
 
 #endif // CHESSBUTTON_H

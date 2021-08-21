@@ -99,6 +99,10 @@ private:
     void SetChessEnable(const int& number, const bool& is_enable);
     void SetAllChessEnable(const bool& is_enable);
 
+    // Set whether button is marked
+    void SetChessMarked(const int& number, const bool& is_marked);
+    void SetAllChessMarked(const bool& is_marked);
+
     // Enable decided by whether here has chess on the node and
     // whether current player can manipulate this chess
     void ChessEnableSyncWithGame();

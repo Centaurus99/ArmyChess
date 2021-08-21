@@ -79,6 +79,16 @@ void MainWindow::SetAllChessEnable(const bool& is_enable) {
     UpdateAllChessEnable();
 }
 
+void MainWindow::SetChessMarked(const int& number, const bool& is_marked) {
+    chess_[number]->setMarked(is_marked);
+}
+
+void MainWindow::SetAllChessMarked(const bool& is_marked) {
+    for (int i = 0; i < 60; ++i) {
+        SetChessMarked(i, is_marked);
+    }
+}
+
 void MainWindow::ChessEnableSyncWithGame() {
     for (int i = 0; i < 60; ++i) {
         Chess* chess = game_->nodes[i].chess;
@@ -97,6 +107,7 @@ void MainWindow::EnableAccessibleChess(const int& number) {
     std::vector<int> list = game_->GetList(number);
     for (auto x : list) {
         SetChessEnable(x, 1);
+        SetChessMarked(x, 1);
     }
 }
 
@@ -140,6 +151,7 @@ void MainWindow::GameClear() {
     step_count_ = 0;
     timeout_remain_[0] = timeout_remain_[1] = 3;
     SetAllChessEnable(0);
+    SetAllChessMarked(0);
 }
 
 void MainWindow::StartGame() {
@@ -263,6 +275,7 @@ void MainWindow::chess_clicked(const int& number) {
             EnableAccessibleChess(number);
         }
     } else {
+        SetAllChessMarked(0);
         if (select_ == number) {
             select_ = -1;
             ChessEnableSyncWithGame();
