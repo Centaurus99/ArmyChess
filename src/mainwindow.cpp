@@ -215,8 +215,8 @@ void MainWindow::AfterTurn() {
 }
 
 void MainWindow::Surrender(const int& player) {
-    int ret = QMessageBox::warning(
-        0, "投降", "确认投降？", QMessageBox::Yes | QMessageBox::No);
+    int ret = QMessageBox::warning(0, "投降", "确认投降？",
+        QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
     if (ret == QMessageBox::Yes) {
         EndGame(player ^ 1);
     }
