@@ -14,6 +14,8 @@ MainWindow::MainWindow(QWidget* parent)
     InitChess();
     delete game_;
     game_ = nullptr;
+    timer = new QTimer(this);
+    connect(timer, &QTimer::timeout, this, &MainWindow::TimeMaintain);
 }
 
 MainWindow::~MainWindow() {
@@ -184,6 +186,7 @@ void MainWindow::BeforeTurn() {
     qDebug() << "[BeforeTurn]"
              << "StepCount_:" << step_count_;
     ChessEnableSyncWithGame();
+    TimeStart();
     ui->label_2->setText(
         game_->GetCurrentPlayer() == 0 ? "我方走子" : "对方走子");
     switch (game_->GetOwnCamp()) {
@@ -209,6 +212,13 @@ void MainWindow::AfterTurn() {
     game_->AfterTurn();
     if (game_->GetWinner() != -1) {
         EndGame(game_->GetWinner());
+        return;
+    }
+    if (timeout_remain_[game_->GetCurrentPlayer()] == 0) {
+        ui->label_4->setText(
+            QString("超时机会：%1 次")
+                .arg(timeout_remain_[game_->GetCurrentPlayer()]));
+        EndGame(game_->GetCurrentPlayer() ^ 1);
         return;
     }
     BeforeTurn();
@@ -312,4 +322,21 @@ void MainWindow::on_actionsurrender_triggered() {
         Surrender(0);
     else
         Surrender(game_->GetCurrentPlayer());
+}
+
+void MainWindow::TimeStart() {
+    remaining_time_ = 20;
+    ui->label->setText(QString("剩余时间 %1 秒").arg(remaining_time_));
+    timer->start(1000);
+}
+
+void MainWindow::TimeMaintain() {
+    if (remaining_time_ != 0) {
+        --remaining_time_;
+        ui->label->setText(QString("剩余时间 %1 秒").arg(remaining_time_));
+    } else {
+        timer->stop();
+        --timeout_remain_[game_->GetCurrentPlayer()];
+        AfterTurn();
+    }
 }

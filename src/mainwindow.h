@@ -4,6 +4,7 @@
 #include "framework/game.h"
 #include "widget/chessbutton.h"
 #include <QMainWindow>
+#include <QTimer>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -32,6 +33,8 @@ private slots:
 
     void on_actionsurrender_triggered();
 
+    void TimeMaintain();
+
 private:
     Ui::MainWindow* ui;
 
@@ -45,8 +48,13 @@ private:
     bool online_mode_ = 0;
     // Count the number of steps
     int step_count_ = 0;
+
     // Remaining timeout times
     int timeout_remain_[2] = { 3, 3 };
+    // Remaining time
+    int remaining_time_ = 0;
+    // Timer
+    QTimer* timer;
 
     // Which button has been slected
     //     -1 : None
@@ -128,5 +136,8 @@ private:
 
     // Set chessboard in the center with a specific aspect ratio
     void Resize();
+
+    // Start countdown
+    void TimeStart();
 };
 #endif // MAINWINDOW_H
