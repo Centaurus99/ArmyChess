@@ -9,6 +9,7 @@ MainWindow::MainWindow(QWidget* parent)
     , ui(new Ui::MainWindow) {
     memset(enable_, 0, sizeof(enable_));
     ui->setupUi(this);
+    ui->centerFrame->installEventFilter(this);
     game_ = new Game;
     InitChess();
     delete game_;
@@ -125,48 +126,11 @@ void MainWindow::UpdateChess(const int& number) {
 }
 
 void MainWindow::UpdateAllChess() {
+    qDebug() << "[UpdateAllChess]" << ui->centerFrame->width() << ':'
+             << ui->centerFrame->height();
     for (int i = 0; i < 60; ++i) {
         UpdateChess(i);
     }
-}
-
-void MainWindow::resizeEvent(QResizeEvent* event) {
-
-    ui->horizontalSpacer->changeSize(0, 0);
-    ui->horizontalSpacer_2->changeSize(0, 0);
-    ui->verticalSpacer->changeSize(0, 0);
-    ui->verticalSpacer_2->changeSize(0, 0);
-
-    float remaining_width = ui->centralwidget->width() - border_width * 2.0;
-    float remaining_height = ui->centralwidget->height() - border_height * 2.0;
-
-    // qDebug() << remaining_width << ':' << remaining_height;
-
-    if (remaining_height <= remaining_width * HW_ratio) {
-        // Height is not enough
-        int delta
-            = round((remaining_width - remaining_height / HW_ratio) / 2.0);
-        // qDebug() << delta;
-        ui->horizontalSpacer->changeSize(delta, 0);
-        ui->horizontalSpacer_2->changeSize(delta, 0);
-    } else {
-        // Width is not enough
-        int delta
-            = round((remaining_height - remaining_width * HW_ratio) / 2.0);
-        // qDebug() << delta;
-        ui->verticalSpacer->changeSize(0, delta);
-        ui->verticalSpacer_2->changeSize(0, delta);
-    }
-
-    ui->centerFrame->update();
-    ui->horizontalLayout->update();
-    ui->verticalLayout->update();
-
-    UpdateAllChess();
-
-    qDebug() << ui->centerFrame->width() << ':' << ui->centerFrame->height();
-    qDebug() << ui->centralwidget->width() << ':' << ui->centralwidget->height()
-             << '\n';
 }
 
 void MainWindow::GameClear() {
@@ -226,6 +190,58 @@ void MainWindow::AfterTurn() {
     BeforeTurn();
 }
 
+void MainWindow::Resize() {
+
+    ui->horizontalSpacer->changeSize(0, 0);
+    ui->horizontalSpacer_2->changeSize(0, 0);
+    ui->verticalSpacer->changeSize(0, 0);
+    ui->verticalSpacer_2->changeSize(0, 0);
+
+    float remaining_width = ui->centralwidget->width() - border_width * 2.0;
+    float remaining_height = ui->centralwidget->height() - border_height * 2.0;
+
+    // qDebug() << remaining_width << ':' << remaining_height;
+
+    if (remaining_height <= remaining_width * HW_ratio) {
+        // Height is not enough
+        int delta
+            = round((remaining_width - remaining_height / HW_ratio) / 2.0);
+        // qDebug() << delta;
+        ui->horizontalSpacer->changeSize(delta, 0);
+        ui->horizontalSpacer_2->changeSize(delta, 0);
+    } else {
+        // Width is not enough
+        int delta
+            = round((remaining_height - remaining_width * HW_ratio) / 2.0);
+        // qDebug() << delta;
+        ui->verticalSpacer->changeSize(0, delta);
+        ui->verticalSpacer_2->changeSize(0, delta);
+    }
+
+    ui->centerFrame->update();
+    ui->horizontalLayout->update();
+    ui->verticalLayout->update();
+
+    qDebug() << ui->centerFrame->width() << ':' << ui->centerFrame->height();
+    qDebug() << ui->centralwidget->width() << ':' << ui->centralwidget->height()
+             << '\n';
+}
+
+bool MainWindow::eventFilter(QObject* obj, QEvent* event) {
+
+    // Change buttons size when centerFrame resized
+    if (obj == ui->centerFrame && event->type() == QEvent::Resize) {
+        qDebug() << "[centerFrame]"
+                 << "Resize!";
+        UpdateAllChess();
+        qDebug() << "[centerFrame]" << chess_[0]->geometry();
+    }
+
+    return QMainWindow::eventFilter(obj, event);
+}
+
+void MainWindow::resizeEvent(QResizeEvent* event) { Resize(); }
+
 void MainWindow::on_actionstart_triggered() { StartGame(); }
 
 void MainWindow::chess_clicked(const int& number) {
@@ -253,4 +269,7 @@ void MainWindow::chess_clicked(const int& number) {
     }
 }
 
-void MainWindow::on_actionflushframe_triggered() { ui->centerFrame->update(); }
+void MainWindow::on_actionflushframe_triggered() {
+    UpdateAllChess();
+    ui->centerFrame->update();
+}

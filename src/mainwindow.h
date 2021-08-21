@@ -18,7 +18,9 @@ public:
     MainWindow(QWidget* parent = nullptr);
     ~MainWindow();
 
-    // Set chessboard in the center with a specific aspect ratio
+    bool eventFilter(QObject* obj, QEvent* event);
+
+protected:
     void resizeEvent(QResizeEvent* event);
 
 private slots:
@@ -110,5 +112,8 @@ private:
     void EndGame(const int& winner);
     void BeforeTurn();
     void AfterTurn();
+
+    // Set chessboard in the center with a specific aspect ratio
+    void Resize();
 };
 #endif // MAINWINDOW_H
