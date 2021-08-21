@@ -256,7 +256,6 @@
      <string>游戏</string>
     </property>
     <addaction name="actionstart"/>
-    <addaction name="actionflushframe"/>
     <addaction name="actionsurrender"/>
    </widget>
    <addaction name="menu"/>
@@ -272,15 +271,10 @@
   </widget>
   <action name="actionstart">
    <property name="text">
-    <string>开始游戏(&amp;S)</string>
+    <string>开始游戏(F5)</string>
    </property>
    <property name="shortcut">
     <string>F5</string>
-   </property>
-  </action>
-  <action name="actionflushframe">
-   <property name="text">
-    <string>flushframe</string>
    </property>
   </action>
   <action name="actionsurrender">
@@ -288,7 +282,7 @@
     <bool>false</bool>
    </property>
    <property name="text">
-    <string>投降</string>
+    <string>投降(F6)</string>
    </property>
    <property name="shortcut">
     <string>F6</string>

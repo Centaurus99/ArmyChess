@@ -169,6 +169,7 @@ void MainWindow::StartGame() {
 
 void MainWindow::EndGame(const int& winner) {
     in_game_ = 0;
+    timer->stop();
     ui->actionsurrender->setEnabled(0);
     SetAllChessEnable(0);
     QString winner_name = winner == 0 ? "我方" : "对方";
@@ -211,6 +212,7 @@ void MainWindow::BeforeTurn() {
 
 void MainWindow::AfterTurn() {
     game_->AfterTurn();
+    timer->stop();
     if (game_->GetWinner() != -1) {
         EndGame(game_->GetWinner());
         return;
@@ -341,7 +343,6 @@ void MainWindow::TimeMaintain() {
         --remaining_time_;
         ui->label->setText(QString("剩余时间 %1 秒").arg(remaining_time_));
     } else {
-        timer->stop();
         --timeout_remain_[game_->GetCurrentPlayer()];
         AfterTurn();
     }
