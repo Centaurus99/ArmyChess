@@ -41,6 +41,7 @@ QRect MainWindow::GetOriginalChessRect(int x, int y) {
 void MainWindow::InitChess() {
     for (int i = 0; i < 60; ++i) {
         chess_[i] = new ChessButton(i, ui->centerFrame);
+        chess_[i]->installEventFilter(this);
         connect(chess_[i], &ChessButton::chess_clicked, this,
             &MainWindow::chess_clicked);
         chess_Rect[i]
@@ -277,6 +278,11 @@ bool MainWindow::eventFilter(QObject* obj, QEvent* event) {
                  << "Resize!";
         UpdateAllChess();
         qDebug() << "[centerFrame]" << chess_[0]->geometry();
+    }
+
+    // Reduce screen flicker
+    if (event->type() == QEvent::Enter || event->type() == QEvent::Leave) {
+        ui->centerFrame->update();
     }
 
     return QMainWindow::eventFilter(obj, event);
