@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(ArmyChess VERSION 0.1 LANGUAGES CXX)
+project(ArmyChess VERSION 0.2 LANGUAGES CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
@@ -54,6 +54,9 @@ else()
 endif()
 
 target_link_libraries(ArmyChess PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+
+find_package(Qt6 COMPONENTS Network REQUIRED)
+target_link_libraries(ArmyChess PRIVATE Qt6::Network)
 
 set_target_properties(ArmyChess PROPERTIES
     MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com
