@@ -250,6 +250,8 @@
     <property name="title">
      <string>连接</string>
     </property>
+    <addaction name="actionCreateServer"/>
+    <addaction name="actionConnect"/>
    </widget>
    <widget class="QMenu" name="menu_2">
     <property name="title">
@@ -286,6 +288,25 @@
    </property>
    <property name="shortcut">
     <string>F6</string>
+   </property>
+  </action>
+  <action name="actionCreateServer">
+   <property name="text">
+    <string>创建服务器(F1)</string>
+   </property>
+   <property name="toolTip">
+    <string>创建服务器(F1)</string>
+   </property>
+   <property name="shortcut">
+    <string>F1</string>
+   </property>
+  </action>
+  <action name="actionConnect">
+   <property name="text">
+    <string>连接服务器(F2)</string>
+   </property>
+   <property name="shortcut">
+    <string>F2</string>
    </property>
   </action>
  </widget>

@@ -2,7 +2,9 @@
 #define MAINWINDOW_H
 
 #include "framework/game.h"
+#include "network/network.h"
 #include "widget/chessbutton.h"
+#include "widget/server_dialog.h"
 #include <QMainWindow>
 #include <QTimer>
 
@@ -27,13 +29,15 @@ protected:
 private slots:
     void on_actionstart_triggered();
 
-    void on_actionflushframe_triggered();
-
     void chess_clicked(const int& number);
 
     void on_actionsurrender_triggered();
 
     void TimeMaintain();
+
+    void on_actionCreateServer_triggered();
+
+    void on_actionConnect_triggered();
 
 private:
     Ui::MainWindow* ui;
@@ -42,12 +46,17 @@ private:
     Game* game_;
     // whether game is in process
     bool in_game_ = 0;
-    // whether button ability is locked
-    bool buttton_lock_ = 0;
-    // whether is under network mode
-    bool online_mode_ = 0;
     // Count the number of steps
     int step_count_ = 0;
+    // whether button ability is locked
+    bool buttton_lock_ = 0;
+
+    // whether in the online mode
+    bool online_mode_ = 0;
+    // Whether this side is server
+    bool is_server_ = 0;
+    // Network socket
+    Network* socket_ = nullptr;
 
     // Remaining timeout times
     int timeout_remain_[2] = { 3, 3 };

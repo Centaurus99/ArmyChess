@@ -2,6 +2,7 @@
 #include "./ui_mainwindow.h"
 #include <QtWidgets/QMessageBox>
 #include <QtWidgets/QPushButton>
+#include <exception>
 #include <vector>
 
 MainWindow::MainWindow(QWidget* parent)
@@ -211,6 +212,8 @@ void MainWindow::BeforeTurn() {
 }
 
 void MainWindow::AfterTurn() {
+    SetAllChessMarked(0);
+    select_ = -1;
     game_->AfterTurn();
     timer->stop();
     if (game_->GetWinner() != -1) {
@@ -320,11 +323,6 @@ void MainWindow::chess_clicked(const int& number) {
     }
 }
 
-void MainWindow::on_actionflushframe_triggered() {
-    UpdateAllChess();
-    ui->centerFrame->update();
-}
-
 void MainWindow::on_actionsurrender_triggered() {
     if (online_mode_)
         Surrender(0);
@@ -345,5 +343,29 @@ void MainWindow::TimeMaintain() {
     } else {
         --timeout_remain_[game_->GetCurrentPlayer()];
         AfterTurn();
+    }
+}
+
+void MainWindow::on_actionCreateServer_triggered() {
+    try {
+        socket_ = new Server();
+    } catch (std::exception& error) {
+        QMessageBox::critical(this, "创建服务器失败", error.what());
+        return;
+    }
+    ServerDialog* dialog
+        = new ServerDialog(qobject_cast<Server*>(socket_)->GetIP(),
+            qobject_cast<Server*>(socket_)->GetPort(), this);
+    if (dialog->exec() != QDialog::Accepted) {
+        delete socket_;
+        socket_ = nullptr;
+    }
+}
+
+void MainWindow::on_actionConnect_triggered() {
+    try {
+        socket_ = new Client("centaurus99.me", 7070);
+    } catch (std::exception& error) {
+        QMessageBox::critical(this, "连接服务器失败", error.what());
     }
 }
