@@ -6,6 +6,13 @@ Network::Network() {
     connect(this, &Network::package_get, this, &Network::test_package_get);
 }
 
+Network::~Network() {
+    if (socket_ != nullptr) {
+        socket_->disconnectFromHost();
+        socket_->deleteLater();
+    }
+}
+
 void Network::SendPackage(const QByteArray& data) {
     qDebug() << "[Post]";
     QByteArray package;
@@ -72,7 +79,12 @@ Server::Server() {
     connect(tcp_server_, &QTcpServer::newConnection, this, &Server::SetSocket);
 }
 
-Server::~Server() { delete tcp_server_; }
+Server::~Server() {
+    if (tcp_server_ != nullptr) {
+        tcp_server_->close();
+        tcp_server_->deleteLater();
+    }
+}
 
 std::vector<QString> Server::GetIP() {
     QString localHostName = QHostInfo::localHostName();

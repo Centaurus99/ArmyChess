@@ -28,6 +28,7 @@ protected:
 
 public:
     Network();
+    virtual ~Network();
 
     // Send a QByteArray package
     void SendPackage(const QByteArray& data);
@@ -62,7 +63,10 @@ class Client : public Network {
 
 private slots:
     void OnConnected() { qDebug() << "[Client]Connected."; }
-    void OnDisconnected() { qDebug() << "[Client]Disconnected."; }
+    void OnDisconnected() {
+        qDebug() << "[Client]Disconnected.";
+        qDebug() << "[ClientDisconnected]" << socket_->errorString();
+    }
 
 public:
     Client(const QString& ip, const qint16& port);
