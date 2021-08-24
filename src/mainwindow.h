@@ -4,6 +4,7 @@
 #include "framework/game.h"
 #include "network/network.h"
 #include "widget/chessbutton.h"
+#include "widget/connect_dialog.h"
 #include "widget/server_dialog.h"
 #include <QMainWindow>
 #include <QTimer>
@@ -38,6 +39,11 @@ private slots:
     void on_actionCreateServer_triggered();
 
     void on_actionConnect_triggered();
+
+    void on_actionDisconnect_triggered();
+
+    // Work as Client, try to connect
+    void ClientConnect(const QString& ip, const qint16& port);
 
 private:
     Ui::MainWindow* ui;
@@ -148,5 +154,9 @@ private:
 
     // Start countdown
     void TimeStart();
+
+    // Toggle online mode
+    void StartOnline(const bool& is_server);
+    void EndOnline();
 };
 #endif // MAINWINDOW_H

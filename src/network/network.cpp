@@ -8,7 +8,7 @@ Network::Network() {
 
 Network::~Network() {
     if (socket_ != nullptr) {
-        socket_->disconnectFromHost();
+        socket_->close();
         socket_->deleteLater();
     }
 }
@@ -64,6 +64,8 @@ void Server::SetSocket() {
     connect(socket_, &QTcpSocket::connected, this, &Server::OnConnected);
     connect(socket_, &QTcpSocket::readyRead, this, &Network::ReadPackage);
     connect(socket_, &QTcpSocket::disconnected, this, &Server::OnDisconnected);
+    SendPackage("7335608");
+    emit SuccessConnection();
 }
 
 Server::Server() {
@@ -72,7 +74,7 @@ Server::Server() {
     if (!tcp_server_->listen(QHostAddress::AnyIPv4, 7070)) {
         qDebug() << "[Server]" << tcp_server_->errorString();
         std::string error = tcp_server_->errorString().toStdString();
-        delete tcp_server_;
+        tcp_server_->deleteLater();
         tcp_server_ = nullptr;
         throw std::runtime_error(error);
     }
@@ -99,12 +101,29 @@ std::vector<QString> Server::GetIP() {
     return servIP;
 }
 
-Client::Client(const QString& ip, const qint16& port) {
-    socket_ = new QTcpSocket(this);
+Client::Client(const int& timeout)
+    : timeout_ { timeout } {
+    socket_ = new QTcpSocket();
     connect(socket_, &QTcpSocket::connected, this, &Client::OnConnected);
     connect(socket_, &QTcpSocket::readyRead, this, &Network::ReadPackage);
     connect(socket_, &QTcpSocket::disconnected, this, &Client::OnDisconnected);
+    timer = new QTimer(this);
+}
+
+Client::~Client() { delete timer; }
+
+void Client::TryConnect(const QString& ip, const qint16& port) {
     qDebug() << "[Client]"
              << "BeginConnect.";
+    connect(this, &Client::package_get, this, &Client::CheckConnect);
     socket_->connectToHost(ip, port);
+    timer->start(timeout_);
+}
+
+void Client::CheckConnect(const QByteArray& package) {
+    if (package.toStdString() == "7335608") {
+        timer->stop();
+        disconnect(this, &Client::package_get, this, &Client::CheckConnect);
+        emit SuccessConnection();
+    }
 }

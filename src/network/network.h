@@ -3,6 +3,7 @@
 
 #include <QDataStream>
 #include <QObject>
+#include <QTimer>
 #include <QtNetWork>
 #include <vector>
 
@@ -11,6 +12,10 @@ class Network : public QObject {
     Q_OBJECT
 
 signals:
+    // Successfully connected
+    void SuccessConnection();
+    // Disconnect
+    void Disconnect();
     // Emitted when a complete package received
     void package_get(const QByteArray&);
 
@@ -43,7 +48,10 @@ private:
 
 private slots:
     void OnConnected() { qDebug() << "[Server]Connected."; }
-    void OnDisconnected() { qDebug() << "[Server]Disconnected."; }
+    void OnDisconnected() {
+        qDebug() << "[Server]Disconnected.";
+        emit Disconnect();
+    }
 
     // Triggered when a new client connected
     void SetSocket();
@@ -65,11 +73,23 @@ private slots:
     void OnConnected() { qDebug() << "[Client]Connected."; }
     void OnDisconnected() {
         qDebug() << "[Client]Disconnected.";
-        qDebug() << "[ClientDisconnected]" << socket_->errorString();
+        qDebug() << "[Client Disconnected]" << socket_->errorString();
+        emit Disconnect();
     }
 
+    // Check whether connection is ok to emit SuccessConnection
+    void CheckConnect(const QByteArray& package);
+
 public:
-    Client(const QString& ip, const qint16& port);
+    // Connection time limit
+    int timeout_;
+    QTimer* timer;
+
+    explicit Client(const int& timeout = 5000);
+    ~Client();
+
+    // Try to connect
+    void TryConnect(const QString& ip, const qint16& port);
 };
 
 #endif // NETWORK_H

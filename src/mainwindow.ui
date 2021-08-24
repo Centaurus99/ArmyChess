@@ -252,6 +252,7 @@
     </property>
     <addaction name="actionCreateServer"/>
     <addaction name="actionConnect"/>
+    <addaction name="actionDisconnect"/>
    </widget>
    <widget class="QMenu" name="menu_2">
     <property name="title">
@@ -303,10 +304,21 @@
   </action>
   <action name="actionConnect">
    <property name="text">
-    <string>连接服务器(F2)</string>
+    <string>连接至服务器(F2)</string>
    </property>
    <property name="shortcut">
     <string>F2</string>
+   </property>
+  </action>
+  <action name="actionDisconnect">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>断开连接(F3)</string>
+   </property>
+   <property name="shortcut">
+    <string>F3</string>
    </property>
   </action>
  </widget>

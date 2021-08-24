@@ -346,6 +346,30 @@ void MainWindow::TimeMaintain() {
     }
 }
 
+void MainWindow::StartOnline(const bool& is_server) {
+    online_mode_ = 1;
+    is_server_ = is_server;
+    ui->actionDisconnect->setEnabled(1);
+    ui->actionCreateServer->setEnabled(0);
+    ui->actionConnect->setEnabled(0);
+    connect(socket_, &Network::Disconnect, this, [&] { EndOnline(); });
+}
+
+void MainWindow::EndOnline() {
+    online_mode_ = 0;
+    is_server_ = 0;
+    buttton_lock_ = 0;
+    ui->actionDisconnect->setEnabled(0);
+    ui->actionCreateServer->setEnabled(1);
+    ui->actionConnect->setEnabled(1);
+    socket_->deleteLater();
+    socket_ = nullptr;
+    ui->label->setText("连接已断开");
+    if (in_game_) {
+        EndGame(0);
+    }
+}
+
 void MainWindow::on_actionCreateServer_triggered() {
     try {
         socket_ = new Server();
@@ -353,19 +377,39 @@ void MainWindow::on_actionCreateServer_triggered() {
         QMessageBox::critical(this, "创建服务器失败", error.what());
         return;
     }
-    ServerDialog* dialog
-        = new ServerDialog(qobject_cast<Server*>(socket_)->GetIP(),
-            qobject_cast<Server*>(socket_)->GetPort(), this);
-    if (dialog->exec() != QDialog::Accepted) {
-        delete socket_;
+    ServerDialog dialog(qobject_cast<Server*>(socket_)->GetIP(),
+        qobject_cast<Server*>(socket_)->GetPort(), this);
+    ui->label->setText("服务器已创建，等待连接中");
+    connect(socket_, &Network::SuccessConnection, this,
+        [&] { ui->label->setText("连接成功，等待开始游戏"); });
+    StartOnline(1);
+    if (dialog.exec() != QDialog::Accepted) {
+        ui->label->setText("军棋");
+        socket_->deleteLater();
         socket_ = nullptr;
     }
 }
 
 void MainWindow::on_actionConnect_triggered() {
-    try {
-        socket_ = new Client("centaurus99.me", 7070);
-    } catch (std::exception& error) {
-        QMessageBox::critical(this, "连接服务器失败", error.what());
+    ConnectDialog dialog(this);
+    socket_ = new Client;
+    connect(&dialog, &ConnectDialog::Connect, this, &MainWindow::ClientConnect);
+    connect(
+        socket_, &Network::SuccessConnection, &dialog, &ConnectDialog::accept);
+    connect(qobject_cast<Client*>(socket_)->timer, &QTimer::timeout, &dialog,
+        [&] { dialog.ConnectionFail("连接超时，请检查服务器信息"); });
+
+    if (dialog.exec() == QDialog::Accepted) {
+        StartOnline(0);
+        ui->label->setText("连接成功，等待主机开始游戏");
+    } else {
+        socket_->deleteLater();
+        socket_ = nullptr;
     }
+}
+
+void MainWindow::on_actionDisconnect_triggered() { EndOnline(); }
+
+void MainWindow::ClientConnect(const QString& ip, const qint16& port) {
+    qobject_cast<Client*>(socket_)->TryConnect(ip, port);
 }
