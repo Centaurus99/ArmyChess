@@ -247,9 +247,9 @@ void Game::CountRole(const int& camp, const int& role, const int& value) {
 #ifdef DEBUG
         assert(flag_[camp]->role == 10);
 #endif
-        --role_count_[camp][role + 2];
+        --role_count_[camp][flag_[camp]->role + 2];
         flag_[camp]->role = 0;
-        ++role_count_[camp][role + 2];
+        ++role_count_[camp][flag_[camp]->role + 2];
     }
 }
 
