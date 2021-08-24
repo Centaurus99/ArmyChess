@@ -17,7 +17,7 @@ Chess::Chess(const int& chess_camp, const int& chess_role, Game* game,
     game_->CountRole(camp, role, 1);
 }
 
-Chess::~Chess() {
+void Chess::Delete() {
     game_->CountRole(camp, role, -1);
     if (role == 0)
         game_->SetWinner(camp ^ 1 ^ game_->GetOwnCamp());
@@ -57,6 +57,14 @@ int Chess::Attack(Chess* other) {
         return -1;
     }
     return other->role < role ? 1 : (other->role == role ? 0 : -1);
+}
+
+void Node::DeleteChess() {
+    if (chess != nullptr) {
+        chess->Delete();
+        delete chess;
+        chess = nullptr;
+    }
 }
 
 void Game::InitGraph() {

@@ -40,7 +40,8 @@ public:
     Chess(const int& chess_camp, const int& chess_role, Game* game = nullptr,
         Node* node = nullptr, const bool& is_hidden = 1);
 
-    ~Chess();
+    // Delete chess from the game
+    void Delete();
 
     void setNode(Node* node) { node_ = node; }
 
@@ -77,7 +78,7 @@ public:
         , chess { which_chess } { }
 
     Node(const Node& other) = delete;
-    ~Node() { DeleteChess(); }
+    ~Node() { delete chess; }
 
     void setCoordinate(const int& x, const int& y) { x_ = x, y_ = y; }
     void setSafe(const bool& safe) { safe_ = safe; }
@@ -90,10 +91,8 @@ public:
     int x() { return x_; }
     int y() { return y_; }
 
-    void DeleteChess() {
-        delete chess;
-        chess = nullptr;
-    }
+    // Delete the chess (if exist) on this node from game
+    void DeleteChess();
 };
 
 class Game {
