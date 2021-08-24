@@ -28,7 +28,7 @@ bool Chess::isMovable() {
         return 1;
     if (game_->GetOwnCamp() == -1)
         return 0;
-    if (camp == game_->GetCurrentPlayer() ^ game_->GetOwnCamp()) {
+    if (camp == (game_->GetCurrentPlayer() ^ game_->GetOwnCamp())) {
         if (role != -2 && role != 0 && role != 10)
             return 1;
     }
