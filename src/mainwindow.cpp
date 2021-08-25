@@ -258,9 +258,14 @@ void MainWindow::AfterTurn() {
 }
 
 void MainWindow::Surrender(const int& player) {
-    int ret = QMessageBox::warning(0, "投降", "确认投降？",
-        QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
-    if (ret == QMessageBox::Yes) {
+    QMessageBox surrender_dialog_(QMessageBox::Warning, "投降", "确认投降？",
+        QMessageBox::Yes | QMessageBox::No);
+    surrender_dialog_.setDefaultButton(QMessageBox::No);
+    if (online_mode_) {
+        connect(socket_, &Network::Disconnect, &surrender_dialog_,
+            &QMessageBox::reject);
+    }
+    if (surrender_dialog_.exec() == QMessageBox::Yes) {
         if (online_mode_)
             socket_->SendPackage("S");
         EndGame(player ^ 1);
