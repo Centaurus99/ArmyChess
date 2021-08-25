@@ -170,6 +170,9 @@ void MainWindow::StartGame(const QByteArray& package) {
             game_->LoadFromByte(
                 std::string(package.constData(), package.length()));
         }
+    } else {
+        ui->actionCreateServer->setEnabled(0);
+        ui->actionConnect->setEnabled(0);
     }
     in_game_ = 1;
     UpdateAllChess();
@@ -178,6 +181,10 @@ void MainWindow::StartGame(const QByteArray& package) {
 }
 
 void MainWindow::EndGame(const int& winner, const QString& msg) {
+    if (!online_mode_) {
+        ui->actionCreateServer->setEnabled(1);
+        ui->actionConnect->setEnabled(1);
+    }
     in_game_ = 0;
     timer->stop();
     ui->actionsurrender->setEnabled(0);
@@ -415,6 +422,16 @@ void MainWindow::StartOnline(const bool& is_server) {
 }
 
 void MainWindow::EndOnline() {
+    if (connection_timer_ != nullptr) {
+        connection_timer_->stop();
+        connection_timer_->deleteLater();
+        connection_timer_ = nullptr;
+    }
+    if (socket_ == nullptr)
+        return;
+    if (in_game_) {
+        EndGame(0, "断开连接");
+    }
     online_mode_ = 0;
     is_server_ = 0;
     buttton_lock_ = 0;
@@ -426,9 +443,6 @@ void MainWindow::EndOnline() {
     socket_->deleteLater();
     socket_ = nullptr;
     ui->label->setText("连接已断开");
-    if (in_game_) {
-        EndGame(0, "断开连接");
-    }
 }
 
 void MainWindow::on_actionCreateServer_triggered() {
