@@ -228,14 +228,23 @@ void MainWindow::BeforeTurn() {
         game_->GetCurrentPlayer() == 0 ? "我方走子" : "对方走子");
     switch (game_->GetOwnCamp()) {
     case -1: {
+        QPalette pa;
+        pa.setColor(QPalette::WindowText, Qt::black);
+        ui->label_3->setPalette(pa);
         ui->label_3->setText("我方阵营：待定");
         break;
     }
     case 0: {
+        QPalette pa;
+        pa.setColor(QPalette::WindowText, Qt::blue);
+        ui->label_3->setPalette(pa);
         ui->label_3->setText("我方阵营：蓝色");
         break;
     }
     case 1: {
+        QPalette pa;
+        pa.setColor(QPalette::WindowText, Qt::red);
+        ui->label_3->setPalette(pa);
         ui->label_3->setText("我方阵营：红色");
         break;
     }
