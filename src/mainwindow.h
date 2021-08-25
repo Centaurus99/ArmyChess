@@ -149,7 +149,7 @@ private:
     // Game mantain function
     void GameClear();
     void StartGame(const QByteArray& package = QByteArray());
-    void EndGame(const int& winner);
+    void EndGame(const int& winner, const QString& msg);
     void BeforeTurn();
     void AfterTurn();
 

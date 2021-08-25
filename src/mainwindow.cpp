@@ -177,7 +177,7 @@ void MainWindow::StartGame(const QByteArray& package) {
     BeforeTurn();
 }
 
-void MainWindow::EndGame(const int& winner) {
+void MainWindow::EndGame(const int& winner, const QString& msg) {
     in_game_ = 0;
     timer->stop();
     ui->actionsurrender->setEnabled(0);
@@ -186,8 +186,12 @@ void MainWindow::EndGame(const int& winner) {
     QString winner_name = winner == 0 ? "我方" : "对方";
 
     // Show result and prevent blocking code
-    QMessageBox* result_dialog_ = new QMessageBox(
-        QMessageBox::Warning, "游戏结束", winner_name + "获胜！  ");
+    QString text = winner_name + "获胜！  ";
+    if (msg != "") {
+        text = (winner == 1 ? "我方" : "对方") + msg + "，" + text;
+    }
+    QMessageBox* result_dialog_
+        = new QMessageBox(QMessageBox::Warning, "游戏结束", text);
     result_dialog_->setAttribute(Qt::WA_DeleteOnClose);
     result_dialog_->show();
 }
@@ -233,7 +237,7 @@ void MainWindow::BeforeTurn() {
                              .arg(timeout_remain_[game_->GetCurrentPlayer()]));
     ui->label_5->setText(QString("第 %1 步").arg(step_count_));
     if (game_->GetWinner() != -1) {
-        EndGame(game_->GetWinner());
+        EndGame(game_->GetWinner(), "无棋可走");
         return;
     }
 }
@@ -244,14 +248,14 @@ void MainWindow::AfterTurn() {
     game_->AfterTurn();
     timer->stop();
     if (game_->GetWinner() != -1) {
-        EndGame(game_->GetWinner());
+        EndGame(game_->GetWinner(), "被夺旗");
         return;
     }
     if (timeout_remain_[game_->GetCurrentPlayer()] == 0) {
         ui->label_4->setText(
             QString("超时机会：%1 次")
                 .arg(timeout_remain_[game_->GetCurrentPlayer()]));
-        EndGame(game_->GetCurrentPlayer() ^ 1);
+        EndGame(game_->GetCurrentPlayer() ^ 1, "超时三次");
         return;
     }
     BeforeTurn();
@@ -268,7 +272,7 @@ void MainWindow::Surrender(const int& player) {
     if (surrender_dialog_.exec() == QMessageBox::Yes) {
         if (online_mode_)
             socket_->SendPackage("S");
-        EndGame(player ^ 1);
+        EndGame(player ^ 1, "投降");
     }
 }
 
@@ -423,7 +427,7 @@ void MainWindow::EndOnline() {
     socket_ = nullptr;
     ui->label->setText("连接已断开");
     if (in_game_) {
-        EndGame(0);
+        EndGame(0, "断开连接");
     }
 }
 
@@ -467,7 +471,7 @@ void MainWindow::on_actionConnect_triggered() {
 
 void MainWindow::on_actionDisconnect_triggered() {
     if (in_game_) {
-        EndGame(1);
+        EndGame(1, "");
     }
     EndOnline();
 }
@@ -495,7 +499,7 @@ void MainWindow::PackageProcessor(const QByteArray& package) {
             return;
         }
         if (package.length() == 1 && package[0] == 'S') {
-            EndGame(0);
+            EndGame(0, "投降");
             return;
         }
         if (package.length() == 1 && package[0] == 'T') {
