@@ -382,11 +382,10 @@ void MainWindow::on_actionCreateServer_triggered() {
     ui->label->setText("服务器已创建，等待连接中");
     connect(socket_, &Network::SuccessConnection, this,
         [&] { ui->label->setText("连接成功，等待开始游戏"); });
+    connect(socket_, &Network::Disconnect, &dialog, &ServerDialog::reject);
     StartOnline(1);
     if (dialog.exec() != QDialog::Accepted) {
-        ui->label->setText("军棋");
-        socket_->deleteLater();
-        socket_ = nullptr;
+        EndOnline();
     }
 }
 
