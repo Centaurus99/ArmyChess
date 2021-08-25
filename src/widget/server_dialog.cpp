@@ -2,7 +2,7 @@
 #include "ui_server_dialog.h"
 
 ServerDialog::ServerDialog(
-    const std::vector<QString>& IPs, const qint16& port, QWidget* parent)
+    const std::vector<QString>& IPs, const int& port, QWidget* parent)
     : QDialog(parent)
     , ui(new Ui::ServerDialog) {
 

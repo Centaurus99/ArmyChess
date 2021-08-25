@@ -43,7 +43,7 @@ private slots:
     void on_actionDisconnect_triggered();
 
     // Work as Client, try to connect
-    void ClientConnect(const QString& ip, const qint16& port);
+    void ClientConnect(const QString& ip, const int& port);
     // Process the received package
     void PackageProcessor(const QByteArray& package);
 

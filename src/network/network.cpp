@@ -80,7 +80,7 @@ void Server::SetSocket() {
 Server::Server() {
     tcp_server_ = new QTcpServer(this);
     tcp_server_->setMaxPendingConnections(1);
-    if (!tcp_server_->listen(QHostAddress::AnyIPv4, 7070)) {
+    if (!tcp_server_->listen(QHostAddress::AnyIPv4)) {
         qDebug() << "[Server]" << tcp_server_->errorString();
         std::string error = tcp_server_->errorString().toStdString();
         tcp_server_->deleteLater();
@@ -122,7 +122,7 @@ Client::Client(const int& timeout)
 
 Client::~Client() { delete timer; }
 
-void Client::TryConnect(const QString& ip, const qint16& port) {
+void Client::TryConnect(const QString& ip, const int& port) {
     qDebug() << "[Client]"
              << "BeginConnect.";
     socket_->close();

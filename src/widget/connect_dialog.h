@@ -12,7 +12,7 @@ class ConnectDialog : public QDialog {
 
 signals:
     // Notify the main program to connect
-    void Connect(const QString& ip, const qint16& port);
+    void Connect(const QString& ip, const int& port);
 
 private:
     Ui::ConnectDialog* ui;

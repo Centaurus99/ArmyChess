@@ -64,7 +64,7 @@ public:
     // Get server IP
     std::vector<QString> GetIP();
     // Get server port
-    qint16 GetPort() { return tcp_server_->serverPort(); }
+    int GetPort() { return tcp_server_->serverPort(); }
 };
 
 class Client : public Network {
@@ -90,7 +90,7 @@ public:
     ~Client();
 
     // Try to connect
-    void TryConnect(const QString& ip, const qint16& port);
+    void TryConnect(const QString& ip, const int& port);
 };
 
 #endif // NETWORK_H

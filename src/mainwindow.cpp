@@ -499,7 +499,7 @@ void MainWindow::on_actionDisconnect_triggered() {
     EndOnline();
 }
 
-void MainWindow::ClientConnect(const QString& ip, const qint16& port) {
+void MainWindow::ClientConnect(const QString& ip, const int& port) {
     qobject_cast<Client*>(socket_)->TryConnect(ip, port);
 }
 

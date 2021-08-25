@@ -16,7 +16,7 @@ public:
     /// @param IPs Host IPs
     /// @param port Server port
     /// @param parent QObject parent
-    ServerDialog(const std::vector<QString>& IPs, const qint16& port,
+    ServerDialog(const std::vector<QString>& IPs, const int& port,
         QWidget* parent = nullptr);
     ~ServerDialog();
 
