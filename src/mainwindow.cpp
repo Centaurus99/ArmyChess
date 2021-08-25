@@ -209,6 +209,10 @@ void MainWindow::BeforeTurn() {
     ui->label_4->setText(QString("超时机会：%1 次")
                              .arg(timeout_remain_[game_->GetCurrentPlayer()]));
     ui->label_5->setText(QString("第 %1 步").arg(step_count_));
+    if (game_->GetWinner() != -1) {
+        EndGame(game_->GetWinner());
+        return;
+    }
 }
 
 void MainWindow::AfterTurn() {

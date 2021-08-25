@@ -308,13 +308,13 @@ void Game::Capture(const int& now, const int& to) {
     }
 }
 
-void Game::BeforeTurn() { current_player_ ^= 1; }
-void Game::AfterTurn() {
-    if (!Movable(current_player_ ^ 1))
-        SetWinner(current_player_);
+void Game::BeforeTurn() {
+    current_player_ ^= 1;
     if (!Movable(current_player_))
         SetWinner(current_player_ ^ 1);
 }
+
+void Game::AfterTurn() { }
 
 void Game::SetWinner(const int& winner) { winner_ = winner; }
 
