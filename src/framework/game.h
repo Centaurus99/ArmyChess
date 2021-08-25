@@ -2,8 +2,10 @@
 #define GAME_H
 
 #include <cassert>
+#include <exception>
 #include <iostream>
 #include <vector>
+
 #define DEBUG 1
 
 class Class;
@@ -188,6 +190,10 @@ public:
     // Game mantain function
     void BeforeTurn();
     void AfterTurn();
+
+    // Conversion with binary packages
+    std::string ExportToByte();
+    void LoadFromByte(const std::string& data);
 };
 
 #endif // GAME_H

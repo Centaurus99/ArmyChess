@@ -318,17 +318,71 @@ void Game::AfterTurn() { }
 
 void Game::SetWinner(const int& winner) { winner_ = winner; }
 
+std::string Game::ExportToByte() {
+    std::string data;
+    data.reserve(102);
+    data.push_back('B');
+    data.push_back(start_player_);
+    for (int i = 0; i < 60; ++i) {
+        if (!nodes[i].isSafe()) {
+            data.push_back(nodes[i].chess->camp);
+            data.push_back(nodes[i].chess->role);
+        }
+    }
+    return data;
+}
+
+void Game::LoadFromByte(const std::string& data) {
+    try {
+        if (data.size() != 102)
+            throw std::runtime_error("Incorrect data length!");
+        std::runtime_error format_error("Incorrect data format!");
+        if (data[0] != 'B')
+            throw format_error;
+        if (0 <= data[1] && data[1] <= 1)
+            start_player_ = current_player_ = data[1] ^ 1;
+        else
+            throw format_error;
+        int p = 2;
+        for (int i = 0; i < 60; ++i) {
+            if (!nodes[i].isSafe()) {
+                if (0 <= data[p] && data[p] <= 1) {
+                    nodes[i].chess->camp = data[p++];
+                } else
+                    throw format_error;
+                if (-2 <= data[p] && data[p] <= 10) {
+                    nodes[i].chess->role = data[p++];
+                    if (nodes[i].chess->role == 10) {
+                        flag_[nodes[i].chess->camp] = nodes[i].chess;
+                    }
+                } else
+                    throw format_error;
+            }
+        }
+    } catch (const std::exception& e) {
+        std::cerr << "[Backend]" << e.what() << '\n';
+        throw;
+    }
+}
+
 // int main() {
-//     Game g;
-//     g.TurnOver(1, 1);
-//     // freopen("log.log", "w", stdout);
-//     // Chess* chess;
-//     // for (int i = 0; i < 60; ++i) {
-//     //     std::cout << i << ':';
-//     //     if (chess = g.nodes[i].chess) {
-//     //         std::cout << chess->camp << ' ' << chess->role << ' ' <<
-//     //         chess->hidden;
-//     //     }
-//     //     std::cout << std::endl;
-//     // }
+//     Game g1, g2;
+//     std::string byte = g1.ExportToByte();
+//     g2.LoadFromByte(byte);
+//     std::cout << g1.GetCurrentPlayer() << " | " << g2.GetCurrentPlayer()
+//               << std::endl;
+//     for (int i = 0; i < 60; ++i) {
+//         std::cout << i << ':';
+//         Chess* chess;
+//         if (chess = g1.nodes[i].chess) {
+//             std::cout << chess->camp << ' ' << chess->role << ' '
+//                       << chess->hidden;
+//         }
+//         std::cout << " | ";
+//         if (chess = g2.nodes[i].chess) {
+//             std::cout << chess->camp << ' ' << chess->role << ' '
+//                       << chess->hidden;
+//         }
+//         std::cout << std::endl;
+//     }
 // }
