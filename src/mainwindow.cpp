@@ -356,6 +356,8 @@ void MainWindow::StartOnline(const bool& is_server) {
     ui->actionDisconnect->setEnabled(1);
     ui->actionCreateServer->setEnabled(0);
     ui->actionConnect->setEnabled(0);
+    if (!is_server)
+        ui->actionstart->setEnabled(0);
     connect(socket_, &Network::Disconnect, this, [&] { EndOnline(); });
 }
 
@@ -366,6 +368,7 @@ void MainWindow::EndOnline() {
     ui->actionDisconnect->setEnabled(0);
     ui->actionCreateServer->setEnabled(1);
     ui->actionConnect->setEnabled(1);
+    ui->actionstart->setEnabled(1);
     socket_->deleteLater();
     socket_ = nullptr;
     ui->label->setText("连接已断开");
