@@ -160,8 +160,17 @@ void MainWindow::GameClear() {
     SetAllChessMarked(0);
 }
 
-void MainWindow::StartGame() {
+void MainWindow::StartGame(const QByteArray& package) {
     GameClear();
+    if (online_mode_) {
+        if (is_server_) {
+            std::string data = game_->ExportToByte();
+            socket_->SendPackage(QByteArray(data.c_str(), data.length()));
+        } else {
+            game_->LoadFromByte(
+                std::string(package.constData(), package.length()));
+        }
+    }
     in_game_ = 1;
     UpdateAllChess();
     ui->centerFrame->update();
@@ -173,12 +182,26 @@ void MainWindow::EndGame(const int& winner) {
     timer->stop();
     ui->actionsurrender->setEnabled(0);
     SetAllChessEnable(0);
+    ui->label->setText("等待重新开始游戏");
     QString winner_name = winner == 0 ? "我方" : "对方";
-    QMessageBox::about(this, "游戏结束", winner_name + "获胜！  ");
+
+    // Show result and prevent blocking code
+    QMessageBox* result_dialog_ = new QMessageBox(
+        QMessageBox::Warning, "游戏结束", winner_name + "获胜！  ");
+    result_dialog_->setAttribute(Qt::WA_DeleteOnClose);
+    result_dialog_->show();
 }
 
 void MainWindow::BeforeTurn() {
     game_->BeforeTurn();
+    if (online_mode_) {
+        if (game_->GetCurrentPlayer() == 0) {
+            buttton_lock_ = 0;
+        } else {
+            SetAllChessEnable(0);
+            buttton_lock_ = 1;
+        }
+    }
     ++step_count_;
     if (step_count_ == 20)
         ui->actionsurrender->setEnabled(1);
@@ -238,6 +261,8 @@ void MainWindow::Surrender(const int& player) {
     int ret = QMessageBox::warning(0, "投降", "确认投降？",
         QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
     if (ret == QMessageBox::Yes) {
+        if (online_mode_)
+            socket_->SendPackage("S");
         EndGame(player ^ 1);
     }
 }
@@ -303,6 +328,12 @@ void MainWindow::on_actionstart_triggered() { StartGame(); }
 
 void MainWindow::chess_clicked(const int& number) {
     qDebug() << "Clicked:" << number;
+    if (online_mode_ && game_->GetCurrentPlayer() == 0) {
+        QByteArray data;
+        data.resize(2);
+        data[0] = 'C', data[1] = number;
+        socket_->SendPackage(data);
+    }
     if (select_ == -1) {
         if (game_->nodes[number].chess->hidden) {
             game_->TurnOver(number);
@@ -345,8 +376,19 @@ void MainWindow::TimeMaintain() {
         --remaining_time_;
         ui->label->setText(QString("剩余时间 %1 秒").arg(remaining_time_));
     } else {
-        --timeout_remain_[game_->GetCurrentPlayer()];
-        AfterTurn();
+        if (online_mode_ && game_->GetCurrentPlayer() == 1) {
+            ui->label->setText(QString("等待对方连接中..."));
+            timer->stop();
+            connection_timer_ = new QTimer;
+            connect(connection_timer_, &QTimer::timeout, this,
+                [&] { EndOnline(); });
+            connection_timer_->start(connection_waiting_time_);
+        } else {
+            if (online_mode_)
+                socket_->SendPackage("T");
+            --timeout_remain_[game_->GetCurrentPlayer()];
+            AfterTurn();
+        }
     }
 }
 
@@ -359,6 +401,8 @@ void MainWindow::StartOnline(const bool& is_server) {
     if (!is_server)
         ui->actionstart->setEnabled(0);
     connect(socket_, &Network::Disconnect, this, [&] { EndOnline(); });
+    connect(
+        socket_, &Network::package_get, this, &MainWindow ::PackageProcessor);
 }
 
 void MainWindow::EndOnline() {
@@ -369,6 +413,7 @@ void MainWindow::EndOnline() {
     ui->actionCreateServer->setEnabled(1);
     ui->actionConnect->setEnabled(1);
     ui->actionstart->setEnabled(1);
+    socket_->DisconnectNow();
     socket_->deleteLater();
     socket_ = nullptr;
     ui->label->setText("连接已断开");
@@ -380,7 +425,7 @@ void MainWindow::EndOnline() {
 void MainWindow::on_actionCreateServer_triggered() {
     try {
         socket_ = new Server();
-    } catch (std::exception& error) {
+    } catch (const std::exception& error) {
         QMessageBox::critical(this, "创建服务器失败", error.what());
         return;
     }
@@ -409,13 +454,54 @@ void MainWindow::on_actionConnect_triggered() {
         StartOnline(0);
         ui->label->setText("连接成功，等待主机开始游戏");
     } else {
+        socket_->DisconnectNow();
         socket_->deleteLater();
         socket_ = nullptr;
     }
 }
 
-void MainWindow::on_actionDisconnect_triggered() { EndOnline(); }
+void MainWindow::on_actionDisconnect_triggered() {
+    if (in_game_) {
+        EndGame(1);
+    }
+    EndOnline();
+}
 
 void MainWindow::ClientConnect(const QString& ip, const qint16& port) {
     qobject_cast<Client*>(socket_)->TryConnect(ip, port);
+}
+
+void MainWindow::PackageProcessor(const QByteArray& package) {
+    try {
+        if (package.length() == 102 && package[0] == 'B' && !is_server_) {
+            StartGame(package);
+            return;
+        }
+        if (!in_game_)
+            throw std::runtime_error("Package received at the wrong time.");
+        if (connection_timer_ != nullptr) {
+            connection_timer_->stop();
+            connection_timer_->deleteLater();
+            connection_timer_ = nullptr;
+        }
+        if (package.length() == 2 && package[0] == 'C'
+            && game_->GetCurrentPlayer() == 1) {
+            chess_clicked(package[1]);
+            return;
+        }
+        if (package.length() == 1 && package[0] == 'S') {
+            EndGame(0);
+            return;
+        }
+        if (package.length() == 1 && package[0] == 'T') {
+            --timeout_remain_[game_->GetCurrentPlayer()];
+            AfterTurn();
+            return;
+        }
+        throw std::runtime_error("Incorrect package format.");
+
+    } catch (const std::exception& error) {
+        QMessageBox::critical(this, "连接出错", error.what());
+        EndOnline();
+    }
 }

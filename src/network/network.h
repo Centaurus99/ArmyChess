@@ -34,6 +34,7 @@ protected:
 public:
     Network();
     virtual ~Network();
+    void DisconnectNow();
 
     // Send a QByteArray package
     void SendPackage(const QByteArray& data);

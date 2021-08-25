@@ -44,6 +44,8 @@ private slots:
 
     // Work as Client, try to connect
     void ClientConnect(const QString& ip, const qint16& port);
+    // Process the received package
+    void PackageProcessor(const QByteArray& package);
 
 private:
     Ui::MainWindow* ui;
@@ -70,6 +72,11 @@ private:
     int remaining_time_ = 0;
     // Timer
     QTimer* timer;
+
+    // Wait for connection timer
+    QTimer* connection_timer_ = nullptr;
+    // Waiting time
+    int connection_waiting_time_ = 5000;
 
     // Which button has been slected
     //     -1 : None
@@ -141,7 +148,7 @@ private:
 
     // Game mantain function
     void GameClear();
-    void StartGame();
+    void StartGame(const QByteArray& package = QByteArray());
     void EndGame(const int& winner);
     void BeforeTurn();
     void AfterTurn();

@@ -8,8 +8,15 @@ Network::Network() {
 
 Network::~Network() {
     if (socket_ != nullptr) {
-        socket_->close();
+        DisconnectNow();
         socket_->deleteLater();
+        socket_ = nullptr;
+    }
+}
+
+void Network::DisconnectNow() {
+    if (socket_ != nullptr) {
+        socket_->disconnectFromHost();
     }
 }
 
@@ -26,6 +33,8 @@ void Network::SendPackage(const QByteArray& data) {
 void Network::ReadPackage() {
     qDebug() << "[Get]Received One Package";
     while (true) {
+        qDebug() << "[Get]isOpen" << socket_->isOpen();
+        qDebug() << "[Get]isValid" << socket_->isValid();
         if (package_size_ == 0) {
             if (socket_->bytesAvailable() < sizeof(SIZE_TYPE))
                 break;
@@ -107,6 +116,7 @@ Client::Client(const int& timeout)
     connect(socket_, &QTcpSocket::connected, this, &Client::OnConnected);
     connect(socket_, &QTcpSocket::readyRead, this, &Network::ReadPackage);
     connect(socket_, &QTcpSocket::disconnected, this, &Client::OnDisconnected);
+    connect(this, &Client::package_get, this, &Client::CheckConnect);
     timer = new QTimer(this);
 }
 
@@ -115,7 +125,7 @@ Client::~Client() { delete timer; }
 void Client::TryConnect(const QString& ip, const qint16& port) {
     qDebug() << "[Client]"
              << "BeginConnect.";
-    connect(this, &Client::package_get, this, &Client::CheckConnect);
+    socket_->close();
     socket_->connectToHost(ip, port);
     timer->start(timeout_);
 }
