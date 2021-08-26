@@ -1,6 +1,14 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(ArmyChess VERSION 0.2 LANGUAGES CXX)
+project(ArmyChess VERSION 1.0 LANGUAGES CXX)
+
+if (CMAKE_BUILD_TYPE STREQUAL Debug)
+    add_definitions(-DDEBUG)
+endif()
+
+if (CMAKE_BUILD_TYPE STREQUAL Release)
+    add_definitions(-DQT_NO_DEBUG_OUTPUT)
+endif()
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 

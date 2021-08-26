@@ -49,7 +49,7 @@ int Chess::Attack(Chess* other) {
         return -1;
     if (other->node_->isSafe())
         return -1;
-    if (other->role==10){
+    if (other->role == 10) {
         return -1;
     }
     if (role == -1 || other->role == -1)
