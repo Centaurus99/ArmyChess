@@ -201,6 +201,7 @@ void MainWindow::EndGame(const int& winner, const QString& msg) {
         = new QMessageBox(QMessageBox::Warning, "游戏结束", text);
     result_dialog_->setAttribute(Qt::WA_DeleteOnClose);
     result_dialog_->show();
+    emit GameOver();
 }
 
 void MainWindow::BeforeTurn() {
@@ -282,7 +283,7 @@ void MainWindow::Surrender(const int& player) {
         QMessageBox::Yes | QMessageBox::No);
     surrender_dialog_.setDefaultButton(QMessageBox::No);
     if (online_mode_) {
-        connect(socket_, &Network::Disconnect, &surrender_dialog_,
+        connect(this, &MainWindow::GameOver, &surrender_dialog_,
             &QMessageBox::reject);
     }
     if (surrender_dialog_.exec() == QMessageBox::Yes) {

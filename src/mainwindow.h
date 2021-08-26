@@ -18,6 +18,9 @@ QT_END_NAMESPACE
 class MainWindow : public QMainWindow {
     Q_OBJECT
 
+signals:
+    void GameOver();
+
 public:
     MainWindow(QWidget* parent = nullptr);
     ~MainWindow();
