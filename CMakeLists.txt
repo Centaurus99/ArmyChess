@@ -2,14 +2,6 @@ cmake_minimum_required(VERSION 3.5)
 
 project(ArmyChess VERSION 1.0 LANGUAGES CXX)
 
-if (CMAKE_BUILD_TYPE STREQUAL Debug)
-    add_definitions(-DDEBUG)
-endif()
-
-if (CMAKE_BUILD_TYPE STREQUAL Release)
-    add_definitions(-DQT_NO_DEBUG_OUTPUT)
-endif()
-
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 set(CMAKE_AUTOUIC ON)
@@ -67,6 +59,15 @@ find_package(Qt6 COMPONENTS Network REQUIRED)
 target_link_libraries(ArmyChess PRIVATE Qt6::Network)
 find_package(Qt6 COMPONENTS Core5Compat REQUIRED)
 target_link_libraries(ArmyChess PRIVATE Qt6::Core5Compat)
+
+if (CMAKE_BUILD_TYPE STREQUAL Debug)
+    add_definitions(-DDEBUG)
+endif()
+
+if (CMAKE_BUILD_TYPE STREQUAL Release)
+    add_definitions(-DQT_NO_DEBUG_OUTPUT)
+    set_target_properties(ArmyChess PROPERTIES WIN32_EXECUTABLE TRUE)
+endif()
 
 set_target_properties(ArmyChess PROPERTIES
     MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com
