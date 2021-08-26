@@ -17,6 +17,7 @@ MainWindow::MainWindow(QWidget* parent)
     game_ = nullptr;
     timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, &MainWindow::TimeMaintain);
+    ui->statusbar->showMessage("单机模式");
 }
 
 MainWindow::~MainWindow() {
@@ -419,6 +420,7 @@ void MainWindow::TimeMaintain() {
 
 void MainWindow::StartOnline(const bool& is_server) {
     online_mode_ = 1;
+    ui->statusbar->showMessage("在线模式");
     is_server_ = is_server;
     ui->actionDisconnect->setEnabled(1);
     ui->actionCreateServer->setEnabled(0);
@@ -442,6 +444,7 @@ void MainWindow::EndOnline() {
         EndGame(0, "断开连接");
     }
     online_mode_ = 0;
+    ui->statusbar->showMessage("单机模式");
     is_server_ = 0;
     buttton_lock_ = 0;
     ui->actionDisconnect->setEnabled(0);
